@@ -18,6 +18,7 @@
       --neon-purple: #b026ff;
       --neon-yellow: #ffe600;
       --neon-green: #00ff66;
+      --neon-orange: #ff9900;
 
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -47,9 +48,129 @@
       flex-direction: column;
       align-items: center;
       padding: 15px;
-      padding-bottom: 90px;
+      padding-top: 80px;
+      padding-bottom: 50px;
       position: relative;
       overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR Y MENÚ HAMBURGUESA */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      background: rgba(3, 7, 18, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .hamburger-btn {
+      background: transparent;
+      border: none;
+      color: var(--neon-cyan);
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 5px;
+      z-index: 101;
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 100%;
+      height: 3px;
+      background-color: var(--neon-cyan);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--neon-cyan);
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn.open span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger-btn.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-btn.open span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* MENÚ DESPLEGABLE SIDEBAR */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.98);
+      border-left: 2px solid var(--neon-cyan);
+      backdrop-filter: blur(15px);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      padding-top: 80px;
+      padding-left: 20px;
+      padding-right: 20px;
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .side-menu.open {
+      right: 0;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 98;
+      display: none;
+    }
+
+    .menu-overlay.open {
+      display: block;
+    }
+
+    .side-menu-item {
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .side-menu-item:hover, .side-menu-item.active {
+      background: rgba(0, 243, 255, 0.15);
+      border-color: var(--neon-cyan);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
     }
 
     /* HEADER SUPERIOR */
@@ -60,9 +181,9 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin-top: 5px;
-      margin-bottom: 20px;
-      z-index: 10;
+      margin-top: 10px;
+      margin-bottom: 25px;
+      cursor: pointer;
     }
 
     .brand-logo-img {
@@ -86,45 +207,106 @@
       line-height: 1;
     }
 
-    /* NAVEGACIÓN FUTURISTA */
-    nav.nav-menu {
+    /* LANDING HUB / CARDS PRINCIPALES */
+    .landing-hub {
       display: flex;
-      justify-content: center;
-      gap: 8px;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
-      max-width: 800px;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 8px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(0, 243, 255, 0.1);
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      backdrop-filter: blur(12px);
-      margin-bottom: 20px;
+      max-width: 900px;
     }
 
-    .nav-btn {
-      flex: 1;
-      padding: 10px 8px;
+    .hub-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: 1.1rem;
       color: var(--text-muted);
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      margin-bottom: 25px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 2px;
       text-align: center;
     }
 
-    .nav-btn.active {
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .hub-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .hub-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--card-accent, var(--neon-cyan));
+      box-shadow: 0 0 10px var(--card-accent, var(--neon-cyan));
+    }
+
+    .hub-card:hover {
+      transform: translateY(-5deg);
+      border-color: var(--card-accent, var(--neon-cyan));
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--card-accent, var(--neon-cyan));
+    }
+
+    .hub-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .hub-card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
       color: #fff;
-      background: rgba(0, 243, 255, 0.2);
-      border-color: var(--neon-cyan);
-      box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
-      text-shadow: 0 0 6px var(--neon-cyan);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hub-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .hub-card-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: transparent;
+      color: var(--card-accent, var(--neon-cyan));
+      border: 1px solid var(--card-accent, var(--neon-cyan));
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .hub-card:hover .hub-card-btn {
+      background: var(--card-accent, var(--neon-cyan));
+      color: #030712;
+      box-shadow: 0 0 12px var(--card-accent, var(--neon-cyan));
     }
 
     .game-container {
@@ -135,7 +317,6 @@
       max-width: 900px;
     }
 
-    /* SECCIONES DE JUEGO */
     .game-mode {
       display: none;
       width: 100%;
@@ -159,7 +340,27 @@
       text-shadow: 0 0 10px var(--current-neon);
     }
 
-    /* CONTROLES GENERALES */
+    .back-to-hub-btn {
+      align-self: flex-start;
+      background: transparent;
+      border: 1px solid var(--text-muted);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .back-to-hub-btn:hover {
+      color: #fff;
+      border-color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+
     .setup-panel {
       background: var(--card-bg);
       border: 1px solid rgba(0, 243, 255, 0.3);
@@ -288,29 +489,19 @@
     }
 
     .card-container {
-      perspective: 1000px;
       width: min(85vw, 300px);
       height: min(115vw, 390px);
-      cursor: pointer;
     }
 
     .card {
       width: 100%;
       height: 100%;
       position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .card.flipped {
-      transform: rotateY(180deg);
     }
 
     .card-face {
-      position: absolute;
       width: 100%;
       height: 100%;
-      backface-visibility: hidden;
       border-radius: 16px;
       display: flex;
       flex-direction: column;
@@ -323,37 +514,9 @@
       backdrop-filter: blur(10px);
     }
 
-    .card-back {
-      background: rgba(15, 23, 42, 0.95);
-      background-image: radial-gradient(var(--current-neon) 1px, transparent 1px);
-      background-size: 15px 15px;
-      justify-content: center;
-      gap: 15px;
-    }
-
-    .card-back-logo {
-      width: 75px;
-      height: 75px;
-      border: 2px solid var(--current-neon);
-      transform: rotate(45deg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 12px var(--current-neon);
-    }
-
-    .card-back-logo span {
-      transform: rotate(-45deg);
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      color: #fff;
-      font-size: 0.75rem;
-    }
-
     .card-front {
       background: rgba(255, 255, 255, 0.96);
       color: #030712;
-      transform: rotateY(180deg);
     }
 
     .card-category-tag {
@@ -454,12 +617,12 @@
       cursor: pointer;
     }
 
-    /* MODO ¿QUIÉN SOY? GRID RESPONSIVE */
+    /* MODO ¿QUIÉN SOY? */
     .players-inputs-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: 220px;
+      max-height: 240px;
       overflow-y: auto;
       padding-right: 5px;
     }
@@ -541,43 +704,251 @@
       word-break: break-word;
     }
 
-    /* MEDIA QUERIES MOBILE ADAPTATION */
+    /* MODO TORNEO FIFA */
+    .tournament-board {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .group-card {
+      background: var(--card-bg);
+      border: 1px solid var(--neon-green);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+    }
+
+    .group-title {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-green);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--neon-green);
+    }
+
+    .group-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .group-table th, .group-table td {
+      padding: 6px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .group-table th {
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+    }
+
+    .match-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(3, 7, 18, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(0, 255, 102, 0.2);
+    }
+
+    .match-team {
+      flex: 1;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .match-score-input {
+      width: 35px;
+      text-align: center;
+      background: #030712;
+      border: 1px solid var(--neon-green);
+      color: #fff;
+      border-radius: 4px;
+      padding: 4px;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .tree-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      width: 100%;
+      overflow-x: auto;
+      padding: 10px 5px;
+    }
+
+    .tree-round {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      min-width: 140px;
+      flex: 1;
+      gap: 20px;
+    }
+
+    .tree-round-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      color: var(--neon-green);
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-shadow: 0 0 5px var(--neon-green);
+    }
+
+    .tree-match {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .tree-team {
+      padding: 8px 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .tree-team:first-child {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 7px 7px 0 0;
+    }
+
+    .tree-team:last-child {
+      border-radius: 0 0 7px 7px;
+    }
+
+    .tree-team.winner {
+      background: rgba(0, 255, 102, 0.25);
+      color: var(--neon-green);
+      font-weight: 900;
+      text-shadow: 0 0 5px var(--neon-green);
+    }
+
+    .tree-team.empty {
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    /* SECCIÓN GASTOS FUTURISTA */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+      background: rgba(3, 7, 18, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 153, 0, 0.3);
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      accent-color: var(--neon-orange);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .expense-card {
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(255, 153, 0, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .expense-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .expense-desc {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .expense-payers {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .expense-amount {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: var(--neon-orange);
+      font-size: 1rem;
+    }
+
+    .transfer-card {
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--neon-orange);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .transfer-arrow {
+      color: var(--neon-orange);
+      font-weight: bold;
+    }
+
     @media (max-width: 640px) {
       header.top-header {
         gap: 14px;
-        margin-top: 10px;
-        margin-bottom: 25px;
+        margin-top: 5px;
+        margin-bottom: 20px;
       }
 
       .brand-logo-img {
-        width: 64px;
-        height: 64px;
-        border-width: 3px;
-        box-shadow: 0 0 20px var(--neon-cyan);
+        width: 55px;
+        height: 55px;
       }
 
       .brand-title {
-        font-size: 1.85rem;
-        letter-spacing: 2px;
-      }
-
-      nav.nav-menu {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        max-width: 100%;
-        margin: 0;
-        border-radius: 16px 16px 0 0;
-        border-bottom: none;
-        z-index: 1000;
-        padding: 10px 5px;
-        background: rgba(3, 7, 18, 0.95);
-      }
-
-      .nav-btn {
-        font-size: 0.65rem;
-        padding: 8px 4px;
+        font-size: 1.6rem;
       }
 
       .cards-grid {
@@ -594,24 +965,100 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="top-header">
+  <!-- BARRA SUPERIOR FIJA CON HAMBURGUESA -->
+  <div class="top-bar">
+    <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="switchMode('hub')">
+      <img src="https://lh3.googleusercontent.com/d/1KiHr6xVBzMGebAZ-iG-4LdGbYg88WGdT" alt="Logo" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--neon-cyan);">
+      <span style="font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: 1px;">EL OCTÓGONO</span>
+    </div>
+    
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- MENÚ OVERLAY Y DESPLEGABLE SIDEBAR -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-item" onclick="switchMode('hub')">🏠 Inicio Hub</div>
+    <div class="side-menu-item" onclick="switchMode('preguntas')">🎯 Preguntas</div>
+    <div class="side-menu-item" onclick="switchMode('sexo')">🔥 Modo Sexo</div>
+    <div class="side-menu-item" onclick="switchMode('impostor')">🤫 El Impostor</div>
+    <div class="side-menu-item" onclick="switchMode('quesoy')">🤔 ¿Quién soy?</div>
+    <div class="side-menu-item" onclick="switchMode('torneo')">🎮 Torneo FIFA</div>
+    <div class="side-menu-item" onclick="switchMode('gastos')">💸 Cuentas Claras</div>
+  </div>
+
+  <!-- HEADER PRINCIPAL -->
+  <header class="top-header" onclick="switchMode('hub')">
     <img src="https://lh3.googleusercontent.com/d/1KiHr6xVBzMGebAZ-iG-4LdGbYg88WGdT" alt="Logo El Octógono" class="brand-logo-img">
     <div class="brand-title">El Octógono</div>
   </header>
 
-  <!-- NAVEGACIÓN -->
-  <nav class="nav-menu">
-    <button class="nav-btn active" id="navPreguntas" onclick="switchMode('preguntas')">Preguntas</button>
-    <button class="nav-btn" id="navSexo" onclick="switchMode('sexo')">Sexo 🔥</button>
-    <button class="nav-btn" id="navImpostor" onclick="switchMode('impostor')">Impostor 🤫</button>
-    <button class="nav-btn" id="navQueSoy" onclick="switchMode('quesoy')">¿Quién soy? 🤔</button>
-  </nav>
-
   <div class="game-container">
     
+    <!-- ==================== PANTALLA PRINCIPAL (HUB) ==================== -->
+    <div class="landing-hub" id="modeHub">
+      <div class="hub-title">Seleccioná una Experiencia</div>
+      
+      <div class="hub-grid">
+        
+        <!-- CARD PREGUNTAS -->
+        <div class="hub-card" style="--card-accent: var(--neon-cyan);" onclick="switchMode('preguntas')">
+          <div class="hub-card-icon">🎯</div>
+          <div class="hub-card-title">Preguntas</div>
+          <div class="hub-card-desc">Girá la ruleta e interactuá con preguntas profundas, retos épicos y secretos.</div>
+          <button class="hub-card-btn">JUGAR AHORA</button>
+        </div>
+
+        <!-- CARD MODO SEXO -->
+        <div class="hub-card" style="--card-accent: var(--neon-pink);" onclick="switchMode('sexo')">
+          <div class="hub-card-icon">🔥</div>
+          <div class="hub-card-title">Modo Sexo</div>
+          <div class="hub-card-desc">Desafíos picantes, fantasías e intimiad pura. Solo para valientes.</div>
+          <button class="hub-card-btn">INGRESAR 🔥</button>
+        </div>
+
+        <!-- CARD EL IMPOSTOR -->
+        <div class="hub-card" style="--card-accent: var(--neon-yellow);" onclick="switchMode('impostor')">
+          <div class="hub-card-icon">🤫</div>
+          <div class="hub-card-title">El Impostor</div>
+          <div class="hub-card-desc">Descubrí quién es el infiltrado en el grupo mediante preguntas astutas.</div>
+          <button class="hub-card-btn">INICIAR PARTIDA</button>
+        </div>
+
+        <!-- CARD ¿QUIÉN SOY? -->
+        <div class="hub-card" style="--card-accent: var(--neon-purple);" onclick="switchMode('quesoy')">
+          <div class="hub-card-icon">🤔</div>
+          <div class="hub-card-title">¿Quién soy?</div>
+          <div class="hub-card-desc">Asignación secreta de roles, países o edades en tarjetas interactivas.</div>
+          <button class="hub-card-btn">REPARTIR TARJETAS</button>
+        </div>
+
+        <!-- CARD TORNEO FIFA -->
+        <div class="hub-card" style="--card-accent: var(--neon-green);" onclick="switchMode('torneo')">
+          <div class="hub-card-icon">🎮</div>
+          <div class="hub-card-title">Torneo FIFA</div>
+          <div class="hub-card-desc">Organizá torneos relámpago con eliminatorias o fased de grupos.</div>
+          <button class="hub-card-btn">CREAR TORNEO</button>
+        </div>
+
+        <!-- CARD GASTOS -->
+        <div class="hub-card" style="--card-accent: var(--neon-orange);" onclick="switchMode('gastos')">
+          <div class="hub-card-icon">💸</div>
+          <div class="hub-card-title">Cuentas Claras</div>
+          <div class="hub-card-desc">Calculá quién le pasa a quién en la juntada de forma rápida y exacta.</div>
+          <button class="hub-card-btn">CALCULAR GASTOS</button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ==================== MODO PREGUNTAS ==================== -->
-    <div class="game-mode active" id="modePreguntas" style="--current-neon: var(--neon-cyan);">
+    <div class="game-mode" id="modePreguntas" style="--current-neon: var(--neon-cyan);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
       <div class="mode-title">Preguntas</div>
       
       <div class="wheel-section" id="wheelSectionPreguntas">
@@ -624,12 +1071,8 @@
 
       <div class="deck-section" id="deckSectionPreguntas">
         <div class="category-title" id="categoryTitlePreguntas">Categoría</div>
-        <div class="card-container" onclick="flipCard('Preguntas')">
+        <div class="card-container">
           <div class="card" id="cardPreguntas">
-            <div class="card-face card-back">
-              <div class="card-back-logo"><span>OCTÓGONO</span></div>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">TOCA PARA REVELAR</p>
-            </div>
             <div class="card-face card-front">
               <div class="card-category-tag" id="cardCategoryTagPreguntas">Categoría</div>
               <div class="card-question" id="cardQuestionPreguntas">¿Cargando pregunta...?</div>
@@ -638,7 +1081,7 @@
           </div>
         </div>
         <div class="controls">
-          <button class="action-btn" id="nextQuestionBtnPreguntas" onclick="drawQuestion('preguntas')" style="display:none;">Siguiente Pregunta</button>
+          <button class="action-btn" id="nextQuestionBtnPreguntas" onclick="drawQuestion('preguntas')">Siguiente Pregunta</button>
           <button class="action-btn" onclick="resetToWheel('preguntas')">Girar de nuevo</button>
         </div>
       </div>
@@ -646,6 +1089,7 @@
 
     <!-- ==================== MODO SEXO ==================== -->
     <div class="game-mode" id="modeSexo" style="--current-neon: var(--neon-pink);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
       <div class="mode-title" style="color: var(--neon-pink);">Modo Sexo 🔥</div>
       
       <div class="wheel-section" id="wheelSectionSexo">
@@ -658,12 +1102,8 @@
 
       <div class="deck-section" id="deckSectionSexo">
         <div class="category-title" id="categoryTitleSexo">Categoría</div>
-        <div class="card-container" onclick="flipCard('Sexo')">
+        <div class="card-container">
           <div class="card" id="cardSexo">
-            <div class="card-face card-back">
-              <div class="card-back-logo"><span>MODO SEXO</span></div>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">TOCA PARA REVELAR</p>
-            </div>
             <div class="card-face card-front">
               <div class="card-category-tag" id="cardCategoryTagSexo">Categoría</div>
               <div class="card-question" id="cardQuestionSexo">¿Cargando pregunta...?</div>
@@ -672,7 +1112,7 @@
           </div>
         </div>
         <div class="controls">
-          <button class="action-btn" id="nextQuestionBtnSexo" onclick="drawQuestion('sexo')" style="display:none;">Siguiente Pregunta</button>
+          <button class="action-btn" id="nextQuestionBtnSexo" onclick="drawQuestion('sexo')">Siguiente Pregunta</button>
           <button class="action-btn" onclick="resetToWheel('sexo')">Girar de nuevo</button>
         </div>
       </div>
@@ -680,9 +1120,9 @@
 
     <!-- ==================== MODO EL IMPOSTOR ==================== -->
     <div class="game-mode" id="modeImpostor" style="--current-neon: var(--neon-yellow);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
       <div class="mode-title" style="color: var(--neon-yellow);">El Impostor 🤫</div>
 
-      <!-- CONFIGURACIÓN: Primero se selecciona cantidad, impostores y categoría -->
       <div class="setup-panel" id="impostorSetup" style="border-color: var(--neon-yellow); display: flex;">
         <div class="setup-group">
           <label for="playerCount" style="color: var(--neon-yellow);">Cantidad de Jugadores:</label>
@@ -718,13 +1158,11 @@
         <button class="primary-btn" style="background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow);" onclick="startImpostorGame()">INICIAR PARTIDA</button>
       </div>
 
-      <!-- TARJETA INDIVIDUAL (Se muestra sólo después de INICIAR PARTIDA) -->
       <div class="gameplay-panel" id="impostorGameplay" style="display: none;">
         <div class="player-card" style="border: 2px solid var(--neon-yellow);">
           <div class="player-name" id="impostorPlayerName" style="color: var(--neon-yellow);">Jugador 1</div>
           
           <div class="secret-box">
-            <span style="color: var(--text-muted); font-size: 0.85rem;" id="secretPlaceholder">Pasa el dispositivo al jugador y toca para revelar.</span>
             <div id="secretContent" style="display: none;"></div>
           </div>
 
@@ -735,7 +1173,6 @@
         </div>
       </div>
 
-      <!-- PANTALLA FINAL -->
       <div class="setup-panel" id="impostorSummary" style="display: none; border-color: var(--neon-yellow); text-align: center;">
         <h2 style="color: var(--neon-yellow); font-family: Orbitron; margin-bottom: 10px; font-size: 1.2rem;">¡Todos vieron su rol!</h2>
         <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px; color: var(--text-muted);">
@@ -747,9 +1184,9 @@
 
     <!-- ==================== MODO ¿QUIÉN SOY? ==================== -->
     <div class="game-mode" id="modeQueSoy" style="--current-neon: var(--neon-purple);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
       <div class="mode-title" style="color: var(--neon-purple);">¿Quién soy? 🤔</div>
 
-      <!-- PASO 1 -->
       <div class="setup-panel" id="queSoyStep1" style="border-color: var(--neon-purple);">
         <div class="setup-group">
           <label for="queSoyPlayerCount" style="color: var(--neon-purple);">Cantidad de Jugadores:</label>
@@ -775,7 +1212,6 @@
         <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="goToQueSoyStep2()">CONTINUAR ➔</button>
       </div>
 
-      <!-- PASO 2 -->
       <div class="setup-panel" id="queSoyStep2" style="display: none; border-color: var(--neon-purple);">
         <div style="font-family: Orbitron; color: var(--neon-purple); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Jugadores</div>
         <div class="players-inputs-container" id="playersInputsContainer"></div>
@@ -783,16 +1219,153 @@
         <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="generateQueSoyCards()">REPARTIR TARJETAS 🚀</button>
       </div>
 
-      <!-- PASO 3 -->
       <div class="gameplay-panel" id="queSoyBoard" style="display: none; width: 100%; flex-direction: column; align-items: center;">
         <div class="cards-grid" id="cardsGrid"></div>
         <button class="action-btn" style="margin-top: 20px; border-color: var(--neon-purple); width: min(85vw, 300px);" onclick="resetQueSoyGame()">Nueva Partida</button>
       </div>
     </div>
 
+    <!-- ==================== MODO TORNEO FIFA ==================== -->
+    <div class="game-mode" id="modeTorneo" style="--current-neon: var(--neon-green);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-green);">Torneo FIFA 🎮</div>
+
+      <div class="setup-panel" id="torneoStep1" style="border-color: var(--neon-green);">
+        <div class="setup-group">
+          <label for="torneoPlayerCount" style="color: var(--neon-green);">Cantidad de Jugadores:</label>
+          <select id="torneoPlayerCount">
+            <option value="4">4 Jugadores</option>
+            <option value="8" selected>8 Jugadores</option>
+            <option value="16">16 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="torneoType" style="color: var(--neon-green);">Tipo de Torneo:</label>
+          <select id="torneoType">
+            <option value="direct" selected>🏆 Eliminación Directa (Llaves)</option>
+            <option value="groups">⚽ Fase de Grupos + Eliminatoria</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-green); color: #030712; box-shadow: 0 0 15px var(--neon-green);" onclick="goToTorneoStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <div class="setup-panel" id="torneoStep2" style="display: none; border-color: var(--neon-green);">
+        <div style="font-family: Orbitron; color: var(--neon-green); font-size: 1rem; text-align: center; margin-bottom: 5px;">Ingresar Jugadores / Equipos</div>
+        <div class="players-inputs-container" id="torneoPlayersInputs"></div>
+
+        <button class="primary-btn" style="background: var(--neon-green); color: #030712; box-shadow: 0 0 15px var(--neon-green);" onclick="startTorneo()">CREAR TORNEO 🏆</button>
+      </div>
+
+      <div class="gameplay-panel" id="torneoBoard" style="display: none; width: 100%;">
+        <div class="tournament-board" id="tournamentBoardContent"></div>
+        <button class="action-btn" style="margin-top: 25px; border-color: var(--neon-green);" onclick="resetTorneo()">Reiniciar Torneo</button>
+      </div>
+    </div>
+
+    <!-- ==================== MODO GASTOS ==================== -->
+    <div class="game-mode" id="modeGastos" style="--current-neon: var(--neon-orange);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-orange);">Cuentas Claras 💸</div>
+
+      <!-- PASO 1: Selección de Participantes -->
+      <div class="setup-panel" id="gastosStep1" style="border-color: var(--neon-orange);">
+        <div class="setup-group">
+          <label for="gastosPlayerCount" style="color: var(--neon-orange);">Número de Participantes:</label>
+          <select id="gastosPlayerCount">
+            <option value="2">2 Personas</option>
+            <option value="3">3 Personas</option>
+            <option value="4" selected>4 Personas</option>
+            <option value="5">5 Personas</option>
+            <option value="6">6 Personas</option>
+            <option value="7">7 Personas</option>
+            <option value="8">8 Personas</option>
+            <option value="9">9 Personas</option>
+            <option value="10">10 Personas</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 15px var(--neon-orange);" onclick="goToGastosStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <!-- PASO 2: Nombres de los Participantes -->
+      <div class="setup-panel" id="gastosStep2" style="display: none; border-color: var(--neon-orange);">
+        <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Participantes</div>
+        <div class="players-inputs-container" id="gastosPlayersInputs"></div>
+
+        <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 15px var(--neon-orange);" onclick="startGastosManager()">INGRESAR GASTOS 💸</button>
+      </div>
+
+      <!-- PASO 3: Carga de Gastos y Cálculo -->
+      <div class="gameplay-panel" id="gastosBoard" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        
+        <!-- FORMULARIO PARA AGREGAR UN GASTO -->
+        <div class="setup-panel" style="border-color: var(--neon-orange); margin-bottom: 20px;">
+          <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 0.9rem; text-align: center; font-weight: 700;">REGISTRAR UN GASTO</div>
+          
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">Concepto (ej. Bebidas, Asado):</label>
+            <input type="text" id="expenseDescInput" placeholder="¿Qué se compró?">
+          </div>
+
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">Monto ($):</label>
+            <input type="number" id="expenseAmountInput" placeholder="0" min="0">
+          </div>
+
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">¿Quién / Quiénes pagaron?:</label>
+            <div class="checkbox-grid" id="payersCheckboxes"></div>
+          </div>
+
+          <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 10px var(--neon-orange);" onclick="addExpense()">AGREGAR GASTO +</button>
+        </div>
+
+        <!-- LISTA DE GASTOS INGRESADOS -->
+        <div class="setup-panel" style="border-color: var(--neon-orange); margin-bottom: 20px;">
+          <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 0.9rem; text-align: center; margin-bottom: 10px; font-weight: 700;">GASTOS REGISTRADOS</div>
+          <div class="expense-list" id="expenseListContainer">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">No hay gastos ingresados aún.</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-family: Orbitron; font-weight: 700; color: #fff; border-top: 1px solid rgba(255, 153, 0, 0.4); padding-top: 8px;">
+            <span>TOTAL JUNTADA:</span>
+            <span id="totalJuntadaAmount" style="color: var(--neon-orange);">$0</span>
+          </div>
+          <button class="primary-btn" style="background: var(--neon-green); color: #030712; margin-top: 15px; box-shadow: 0 0 15px var(--neon-green);" onclick="calculateBalances()">CALCULAR SALDOS ➔</button>
+        </div>
+
+        <!-- BALANCES Y TRANSFERENCIAS -->
+        <div class="setup-panel" id="gastosResultsPanel" style="display: none; border-color: var(--neon-green);">
+          <div style="font-family: Orbitron; color: var(--neon-green); font-size: 1.1rem; text-align: center; margin-bottom: 15px; font-weight: 900;">¿QUIÉN LE PASA A QUIÉN? 🤝</div>
+          
+          <div id="transfersContainer"></div>
+
+          <button class="action-btn" style="margin-top: 15px; border-color: var(--neon-orange);" onclick="resetGastosGame()">Reiniciar Todo</button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <script>
+    // CONTROL DEL MENÚ HAMBURGUESA
+    function toggleMenu() {
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('sideMenu');
+      const overlay = document.getElementById('menuOverlay');
+      
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    // FUNCIÓN DE FORMATO MONETARIO (SIN DECIMALES Y CON PUNTOS DE SEPARACIÓN DE MILES)
+    function formatMoney(amount) {
+      return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     // DATA GENERAL
     const questionsPreguntas = {
       profundas: [
@@ -865,7 +1438,7 @@
       { name: 'Extremas', color: '#ff0055', textColor: '#ffffff', key: 'extremas' }
     ];
 
-    let currentMode = 'preguntas';
+    let currentMode = 'hub';
     let state = {
       preguntas: { angle: 0, spinning: false, key: '' },
       sexo: { angle: 0, spinning: false, key: '' }
@@ -874,6 +1447,7 @@
     function drawWheel(mode) {
       const isPreguntas = mode === 'preguntas';
       const canvas = document.getElementById(isPreguntas ? 'canvasPreguntas' : 'canvasSexo');
+      if(!canvas) return;
       const ctx = canvas.getContext('2d');
       const cats = isPreguntas ? categoriesPreguntas : categoriesSexo;
 
@@ -912,22 +1486,33 @@
 
     function switchMode(mode) {
       currentMode = mode;
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // Cerrar menú si está abierto
+      const sideMenu = document.getElementById('sideMenu');
+      if (sideMenu.classList.contains('open')) {
+        toggleMenu();
+      }
+
+      document.getElementById('modeHub').style.display = 'none';
       document.querySelectorAll('.game-mode').forEach(m => m.classList.remove('active'));
 
-      if(mode === 'preguntas') {
-        document.getElementById('navPreguntas').classList.add('active');
+      if(mode === 'hub') {
+        document.getElementById('modeHub').style.display = 'flex';
+      } else if(mode === 'preguntas') {
         document.getElementById('modePreguntas').classList.add('active');
       } else if(mode === 'sexo') {
-        document.getElementById('navSexo').classList.add('active');
         document.getElementById('modeSexo').classList.add('active');
       } else if(mode === 'impostor') {
-        document.getElementById('navImpostor').classList.add('active');
         document.getElementById('modeImpostor').classList.add('active');
       } else if(mode === 'quesoy') {
-        document.getElementById('navQueSoy').classList.add('active');
         document.getElementById('modeQueSoy').classList.add('active');
+      } else if(mode === 'torneo') {
+        document.getElementById('modeTorneo').classList.add('active');
+      } else if(mode === 'gastos') {
+        document.getElementById('modeGastos').classList.add('active');
       }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function spinWheel(mode) {
@@ -971,36 +1556,11 @@
 
       document.getElementById(isPreguntas ? 'categoryTitlePreguntas' : 'categoryTitleSexo').innerText = category.name;
       document.getElementById(isPreguntas ? 'cardCategoryTagPreguntas' : 'cardCategoryTagSexo').innerText = category.name;
-      
-      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
-      card.classList.remove('flipped');
 
       drawQuestion(mode);
     }
 
-    function flipCard(modeType) {
-      const isPreguntas = modeType === 'Preguntas';
-      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
-      card.classList.toggle('flipped');
-      
-      if(card.classList.contains('flipped')) {
-        document.getElementById(isPreguntas ? 'nextQuestionBtnPreguntas' : 'nextQuestionBtnSexo').style.display = 'block';
-      }
-    }
-
     function drawQuestion(mode) {
-      const isPreguntas = mode === 'preguntas';
-      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
-      
-      if (card.classList.contains('flipped')) {
-        card.classList.remove('flipped');
-        setTimeout(() => setRandomQuestion(mode), 300);
-      } else {
-        setRandomQuestion(mode);
-      }
-    }
-
-    function setRandomQuestion(mode) {
       const isPreguntas = mode === 'preguntas';
       const questionsBank = isPreguntas ? questionsPreguntas : questionsSexo;
       const key = state[mode].key;
@@ -1015,7 +1575,6 @@
       document.getElementById(isPreguntas ? 'deckSectionPreguntas' : 'deckSectionSexo').style.display = 'none';
       document.getElementById(isPreguntas ? 'wheelSectionPreguntas' : 'wheelSectionSexo').style.display = 'flex';
       document.getElementById(isPreguntas ? 'spinBtnPreguntas' : 'spinBtnSexo').disabled = false;
-      document.getElementById(isPreguntas ? 'nextQuestionBtnPreguntas' : 'nextQuestionBtnSexo').style.display = 'none';
     }
 
     // IMPOSTOR LOGIC
@@ -1054,7 +1613,6 @@
     function updateImpostorCardView() {
       impostorState.isRevealed = false;
       document.getElementById('impostorPlayerName').innerText = `Jugador ${impostorState.currentPlayerIndex + 1}`;
-      document.getElementById('secretPlaceholder').style.display = 'block';
       document.getElementById('secretContent').style.display = 'none';
       document.getElementById('toggleRevealBtn').innerText = 'VER ROL';
       document.getElementById('nextPlayerBtn').style.display = 'none';
@@ -1062,13 +1620,11 @@
 
     function toggleRevealRole() {
       impostorState.isRevealed = !impostorState.isRevealed;
-      const placeholder = document.getElementById('secretPlaceholder');
       const content = document.getElementById('secretContent');
       const btn = document.getElementById('toggleRevealBtn');
       const nextBtn = document.getElementById('nextPlayerBtn');
 
       if (impostorState.isRevealed) {
-        placeholder.style.display = 'none';
         content.style.display = 'block';
         btn.innerText = 'OCULTAR';
         nextBtn.style.display = 'block';
@@ -1080,7 +1636,6 @@
           content.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted);">PALABRA SECRETA:</div><div style="font-family:Orbitron; font-size:1.3rem; color:var(--neon-yellow); font-weight:900;">${impostorState.secretWord}</div>`;
         }
       } else {
-        placeholder.style.display = 'block';
         content.style.display = 'none';
         btn.innerText = 'VER ROL';
       }
@@ -1191,6 +1746,560 @@
     function resetQueSoyGame() {
       document.getElementById('queSoyBoard').style.display = 'none';
       document.getElementById('queSoyStep1').style.display = 'flex';
+    }
+
+    // MODO TORNEO FIFA LOGIC
+    let torneoState = {
+      playersCount: 8,
+      type: 'direct',
+      players: [],
+      groups: [],
+      tree: {}
+    };
+
+    function goToTorneoStep2() {
+      const count = parseInt(document.getElementById('torneoPlayerCount').value);
+      torneoState.playersCount = count;
+      torneoState.type = document.getElementById('torneoType').value;
+
+      const container = document.getElementById('torneoPlayersInputs');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-green);">Jugador / Equipo ${i}</label>
+          <input type="text" id="torneoPlayerInput_${i}" placeholder="Nombre ${i}" value="Jugador ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('torneoStep1').style.display = 'none';
+      document.getElementById('torneoStep2').style.display = 'flex';
+    }
+
+    function startTorneo() {
+      const count = torneoState.playersCount;
+      torneoState.players = [];
+
+      for(let i = 1; i <= count; i++) {
+        const name = document.getElementById(`torneoPlayerInput_${i}`).value.trim() || `Jugador ${i}`;
+        torneoState.players.push(name);
+      }
+
+      const shuffled = [...torneoState.players].sort(() => Math.random() - 0.5);
+
+      if (torneoState.type === 'groups') {
+        setupGroupsMode(count, shuffled);
+      } else {
+        setupDirectKnockoutMode(count, shuffled);
+      }
+
+      document.getElementById('torneoStep2').style.display = 'none';
+      document.getElementById('torneoBoard').style.display = 'flex';
+      renderTorneoBoard();
+    }
+
+    function setupGroupsMode(count, shuffled) {
+      const groupLetters = ['A', 'B', 'C', 'D'];
+      const numGroups = count / 4;
+      torneoState.groups = [];
+
+      for (let g = 0; g < numGroups; g++) {
+        const groupTeams = shuffled.slice(g * 4, (g + 1) * 4).map(name => ({
+          name, pts: 0, gf: 0, gc: 0, dg: 0
+        }));
+        
+        const matches = [];
+        for (let i = 0; i < groupTeams.length; i++) {
+          for (let j = i + 1; j < groupTeams.length; j++) {
+            matches.push({ t1: groupTeams[i].name, t2: groupTeams[j].name, s1: '', s2: '' });
+          }
+        }
+
+        torneoState.groups.push({
+          name: `Grupo ${groupLetters[g]}`,
+          teams: groupTeams,
+          matches: matches
+        });
+      }
+
+      if (count === 4) {
+        torneoState.tree = {
+          semi: [
+            { t1: "1° Grupo A", t2: "2° Grupo A", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semifinal", t2: "3° Grupo A", winner: null }
+          ]
+        };
+      } else if (count === 8) {
+        torneoState.tree = {
+          semi: [
+            { t1: "1° Grupo A", t2: "2° Grupo B", winner: null },
+            { t1: "1° Grupo B", t2: "2° Grupo A", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semi 1", t2: "Ganador Semi 2", winner: null }
+          ]
+        };
+      } else if (count === 16) {
+        torneoState.tree = {
+          quarters: [
+            { t1: "1° Grupo A", t2: "2° Grupo B", winner: null },
+            { t1: "1° Grupo C", t2: "2° Grupo D", winner: null },
+            { t1: "1° Grupo B", t2: "2° Grupo A", winner: null },
+            { t1: "1° Grupo D", t2: "2° Grupo C", winner: null }
+          ],
+          semi: [
+            { t1: "Ganador Cuartos 1", t2: "Ganador Cuartos 2", winner: null },
+            { t1: "Ganador Cuartos 3", t2: "Ganador Cuartos 4", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semi 1", t2: "Ganador Semi 2", winner: null }
+          ]
+        };
+      }
+    }
+
+    function setupDirectKnockoutMode(count, shuffled) {
+      torneoState.groups = [];
+      if (count === 4) {
+        torneoState.tree = {
+          semi: [
+            { t1: shuffled[0], t2: shuffled[1], winner: null },
+            { t1: shuffled[2], t2: shuffled[3], winner: null }
+          ],
+          final: [
+            { t1: "???", t2: "???", winner: null }
+          ]
+        };
+      } else if (count === 8) {
+        torneoState.tree = {
+          quarters: [
+            { t1: shuffled[0], t2: shuffled[1], winner: null },
+            { t1: shuffled[2], t2: shuffled[3], winner: null },
+            { t1: shuffled[4], t2: shuffled[5], winner: null },
+            { t1: shuffled[6], t2: shuffled[7], winner: null }
+          ],
+          semi: [
+            { t1: "???", t2: "???", winner: null },
+            { t1: "???", t2: "???", winner: null }
+          ],
+          final: [
+            { t1: "???", t2: "???", winner: null }
+          ]
+        };
+      } else if (count === 16) {
+        let r16 = [];
+        for(let i=0; i<8; i++) {
+          r16.push({ t1: shuffled[i*2], t2: shuffled[i*2+1], winner: null });
+        }
+        torneoState.tree = {
+          r16: r16,
+          quarters: Array(4).fill(null).map(() => ({ t1: "???", t2: "???", winner: null })),
+          semi: Array(2).fill(null).map(() => ({ t1: "???", t2: "???", winner: null })),
+          final: [{ t1: "???", t2: "???", winner: null }]
+        };
+      }
+    }
+
+    function updateMatchScore(gIndex, mIndex, s1, s2) {
+      const group = torneoState.groups[gIndex];
+      const match = group.matches[mIndex];
+      match.s1 = s1 !== '' ? parseInt(s1) : '';
+      match.s2 = s2 !== '' ? parseInt(s2) : '';
+
+      group.teams.forEach(t => { t.pts = 0; t.gf = 0; t.gc = 0; t.dg = 0; });
+
+      group.matches.forEach(m => {
+        if (m.s1 !== '' && m.s2 !== '' && !isNaN(m.s1) && !isNaN(m.s2)) {
+          const t1 = group.teams.find(t => t.name === m.t1);
+          const t2 = group.teams.find(t => t.name === m.t2);
+
+          t1.gf += m.s1; t1.gc += m.s2;
+          t2.gf += m.s2; t2.gc += m.s1;
+
+          if (m.s1 > m.s2) t1.pts += 3;
+          else if (m.s2 > m.s1) t2.pts += 3;
+          else { t1.pts += 1; t2.pts += 1; }
+        }
+      });
+
+      group.teams.forEach(t => { t.dg = t.gf - t.gc; });
+      group.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+
+      if (torneoState.type === 'groups') updateGroupKnockoutTeams();
+      renderTorneoBoard();
+    }
+
+    function updateGroupKnockoutTeams() {
+      if (torneoState.playersCount === 8) {
+        const gA = torneoState.groups[0].teams;
+        const gB = torneoState.groups[1].teams;
+        torneoState.tree.semi[0].t1 = gA[0].name;
+        torneoState.tree.semi[0].t2 = gB[1].name;
+        torneoState.tree.semi[1].t1 = gB[0].name;
+        torneoState.tree.semi[1].t2 = gA[1].name;
+      } else if (torneoState.playersCount === 16) {
+        const gA = torneoState.groups[0].teams;
+        const gB = torneoState.groups[1].teams;
+        const gC = torneoState.groups[2].teams;
+        const gD = torneoState.groups[3].teams;
+        torneoState.tree.quarters[0].t1 = gA[0].name;
+        torneoState.tree.quarters[0].t2 = gB[1].name;
+        torneoState.tree.quarters[1].t1 = gC[0].name;
+        torneoState.tree.quarters[1].t2 = gD[1].name;
+        torneoState.tree.quarters[2].t1 = gB[0].name;
+        torneoState.tree.quarters[2].t2 = gA[1].name;
+        torneoState.tree.quarters[3].t1 = gD[0].name;
+        torneoState.tree.quarters[3].t2 = gC[1].name;
+      }
+    }
+
+    function selectTreeWinner(stage, matchIdx, winnerTeam) {
+      if (!winnerTeam || winnerTeam === '???') return;
+      const stagesOrder = ['r16', 'quarters', 'semi', 'final'];
+      const currentStageIdx = stagesOrder.indexOf(stage);
+
+      torneoState.tree[stage][matchIdx].winner = winnerTeam;
+
+      if (currentStageIdx < stagesOrder.length - 1) {
+        const nextStage = stagesOrder[currentStageIdx + 1];
+        if (torneoState.tree[nextStage]) {
+          const nextMatchIdx = Math.floor(matchIdx / 2);
+          const isFirst = matchIdx % 2 === 0;
+          if (isFirst) torneoState.tree[nextStage][nextMatchIdx].t1 = winnerTeam;
+          else torneoState.tree[nextStage][nextMatchIdx].t2 = winnerTeam;
+        }
+      }
+      renderTorneoBoard();
+    }
+
+    function renderTorneoBoard() {
+      const container = document.getElementById('tournamentBoardContent');
+      let html = '';
+
+      if (torneoState.type === 'groups' && torneoState.groups.length > 0) {
+        html += `<h3 style="font-family:Orbitron; color:var(--neon-green); text-align:center;">FASE DE GRUPOS</h3>`;
+        torneoState.groups.forEach((g, gIdx) => {
+          html += `
+            <div class="group-card">
+              <div class="group-title">${g.name}</div>
+              <table class="group-table">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;">Equipo</th>
+                    <th>PTS</th>
+                    <th>GF</th>
+                    <th>GC</th>
+                    <th>DG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${g.teams.map((t, idx) => `
+                    <tr style="${idx < 2 ? 'color: var(--neon-green); font-weight: bold;' : ''}">
+                      <td style="text-align:left;">${idx + 1}. ${t.name}</td>
+                      <td>${t.pts}</td>
+                      <td>${t.gf}</td>
+                      <td>${t.gc}</td>
+                      <td>${t.dg > 0 ? '+' + t.dg : t.dg}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+
+              <div style="margin-top: 15px;">
+                <div style="font-family:Orbitron; font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Partidos del Grupo</div>
+                ${g.matches.map((m, mIdx) => `
+                  <div class="match-row">
+                    <div class="match-team" style="text-align:right;">${m.t1}</div>
+                    <div style="display:flex; gap:4px; align-items:center; margin: 0 8px;">
+                      <input type="number" class="match-score-input" value="${m.s1 !== '' ? m.s1 : ''}" onchange="updateMatchScore(${gIdx}, ${mIdx}, this.value, ${m.s2})">
+                      <span style="font-size:0.8rem; color:var(--text-muted);">-</span>
+                      <input type="number" class="match-score-input" value="${m.s2 !== '' ? m.s2 : ''}" onchange="updateMatchScore(${gIdx}, ${mIdx}, ${m.s1}, this.value)">
+                    </div>
+                    <div class="match-team" style="text-align:left;">${m.t2}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      html += `<h3 style="font-family:Orbitron; color:var(--neon-green); text-align:center; margin-top:20px;">LLAVES ELIMINATORIAS</h3>`;
+      html += `<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:10px;">Toca sobre el nombre del ganador para hacerlo avanzar</div>`;
+      
+      html += `<div class="tree-container">`;
+
+      if (torneoState.tree.r16) {
+        html += `<div class="tree-round">
+          <div class="tree-round-title">Octavos</div>
+          ${torneoState.tree.r16.map((m, idx) => renderTreeMatch('r16', idx, m)).join('')}
+        </div>`;
+      }
+
+      if (torneoState.tree.quarters) {
+        html += `<div class="tree-round">
+          <div class="tree-round-title">Cuartos</div>
+          ${torneoState.tree.quarters.map((m, idx) => renderTreeMatch('quarters', idx, m)).join('')}
+        </div>`;
+      }
+
+      if (torneoState.tree.semi) {
+        html += `<div class="tree-round">
+          <div class="tree-round-title">Semifinales</div>
+          ${torneoState.tree.semi.map((m, idx) => renderTreeMatch('semi', idx, m)).join('')}
+        </div>`;
+      }
+
+      if (torneoState.tree.final) {
+        const f = torneoState.tree.final[0];
+        html += `<div class="tree-round">
+          <div class="tree-round-title" style="color:var(--neon-yellow);">Gran Final 👑</div>
+          <div class="tree-match" style="border-color:var(--neon-yellow); box-shadow:0 0 15px rgba(255,230,0,0.3);">
+            <div class="tree-team ${f.winner === f.t1 ? 'winner' : ''} ${f.t1 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('final', 0, '${f.t1}')">
+              <span>${f.t1}</span> ${f.winner === f.t1 ? '🏆' : ''}
+            </div>
+            <div class="tree-team ${f.winner === f.t2 ? 'winner' : ''} ${f.t2 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('final', 0, '${f.t2}')">
+              <span>${f.t2}</span> ${f.winner === f.t2 ? '🏆' : ''}
+            </div>
+          </div>
+        </div>`;
+      }
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function renderTreeMatch(stage, idx, m) {
+      return `
+        <div class="tree-match">
+          <div class="tree-team ${m.winner === m.t1 ? 'winner' : ''} ${m.t1 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('${stage}', ${idx}, '${m.t1}')">
+            <span>${m.t1}</span> ${m.winner === m.t1 ? '✓' : ''}
+          </div>
+          <div class="tree-team ${m.winner === m.t2 ? 'winner' : ''} ${m.t2 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('${stage}', ${idx}, '${m.t2}')">
+            <span>${m.t2}</span> ${m.winner === m.t2 ? '✓' : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function resetTorneo() {
+      document.getElementById('torneoBoard').style.display = 'none';
+      document.getElementById('torneoStep1').style.display = 'flex';
+    }
+
+    // ==================== MODO GASTOS LOGIC ====================
+    let gastosData = {
+      players: [],
+      expenses: []
+    };
+
+    function goToGastosStep2() {
+      const count = parseInt(document.getElementById('gastosPlayerCount').value);
+      const container = document.getElementById('gastosPlayersInputs');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-orange);">Persona ${i}</label>
+          <input type="text" id="gastosPlayerInput_${i}" placeholder="Nombre persona ${i}" value="Persona ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('gastosStep1').style.display = 'none';
+      document.getElementById('gastosStep2').style.display = 'flex';
+    }
+
+    function startGastosManager() {
+      const count = parseInt(document.getElementById('gastosPlayerCount').value);
+      gastosData.players = [];
+      gastosData.expenses = [];
+
+      for(let i = 1; i <= count; i++) {
+        const name = document.getElementById(`gastosPlayerInput_${i}`).value.trim() || `Persona ${i}`;
+        gastosData.players.push(name);
+      }
+
+      // Rellenar checkboxes de pagadores
+      const checkboxesContainer = document.getElementById('payersCheckboxes');
+      checkboxesContainer.innerHTML = '';
+
+      gastosData.players.forEach((p, idx) => {
+        const item = document.createElement('label');
+        item.className = 'checkbox-item';
+        item.innerHTML = `
+          <input type="checkbox" value="${p}" class="payer-checkbox">
+          <span>${p}</span>
+        `;
+        checkboxesContainer.appendChild(item);
+      });
+
+      document.getElementById('gastosStep2').style.display = 'none';
+      document.getElementById('gastosBoard').style.display = 'flex';
+      renderExpensesList();
+    }
+
+    function addExpense() {
+      const descInput = document.getElementById('expenseDescInput');
+      const amountInput = document.getElementById('expenseAmountInput');
+      
+      const desc = descInput.value.trim() || 'Varios';
+      const amount = parseFloat(amountInput.value);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert('Por favor, ingresá un monto válido mayor a 0.');
+        return;
+      }
+
+      const checkedPayers = Array.from(document.querySelectorAll('.payer-checkbox:checked')).map(cb => cb.value);
+
+      if (checkedPayers.length === 0) {
+        alert('Por favor, seleccioná al menos a un participante que pagó.');
+        return;
+      }
+
+      gastosData.expenses.push({
+        desc,
+        amount,
+        payers: checkedPayers
+      });
+
+      // Limpiar inputs
+      descInput.value = '';
+      amountInput.value = '';
+      document.querySelectorAll('.payer-checkbox').forEach(cb => cb.checked = false);
+
+      renderExpensesList();
+    }
+
+    function renderExpensesList() {
+      const container = document.getElementById('expenseListContainer');
+      const totalSpan = document.getElementById('totalJuntadaAmount');
+
+      if (gastosData.expenses.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">No hay gastos ingresados aún.</div>';
+        totalSpan.innerText = '$0';
+        return;
+      }
+
+      let total = 0;
+      let html = '';
+
+      gastosData.expenses.forEach((exp, idx) => {
+        total += exp.amount;
+        html += `
+          <div class="expense-card">
+            <div class="expense-info">
+              <div class="expense-desc">${exp.desc}</div>
+              <div class="expense-payers">Pagó: ${exp.payers.join(', ')}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="expense-amount">$${formatMoney(exp.amount)}</div>
+              <button onclick="removeExpense(${idx})" style="background:transparent; border:none; color:var(--neon-pink); cursor:pointer; font-weight:bold;">✕</button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      totalSpan.innerText = `$${formatMoney(total)}`;
+    }
+
+    function removeExpense(index) {
+      gastosData.expenses.splice(index, 1);
+      renderExpensesList();
+    }
+
+    function calculateBalances() {
+      if (gastosData.expenses.length === 0) {
+        alert('Agregá al menos un gasto antes de calcular.');
+        return;
+      }
+
+      const totalCost = gastosData.expenses.reduce((sum, e) => sum + e.amount, 0);
+      const perPersonShare = totalCost / gastosData.players.length;
+
+      // Calcular lo que puso cada uno
+      const netBalances = {};
+      gastosData.players.forEach(p => { netBalances[p] = -perPersonShare; });
+
+      gastosData.expenses.forEach(exp => {
+        const splitAmount = exp.amount / exp.payers.length;
+        exp.payers.forEach(payer => {
+          netBalances[payer] += splitAmount;
+        });
+      });
+
+      // Algoritmo de resolución de deudas (Deudores a Acreedores)
+      let debtors = [];
+      let creditors = [];
+
+      for (const [player, balance] of Object.entries(netBalances)) {
+        if (balance < -0.01) {
+          debtors.push({ name: player, amount: Math.abs(balance) });
+        } else if (balance > 0.01) {
+          creditors.push({ name: player, amount: balance });
+        }
+      }
+
+      let transfers = [];
+      let i = 0, j = 0;
+
+      while (i < debtors.length && j < creditors.length) {
+        let debtor = debtors[i];
+        let creditor = creditors[j];
+
+        let minAmount = Math.min(debtor.amount, creditor.amount);
+        transfers.push({
+          from: debtor.name,
+          to: creditor.name,
+          amount: minAmount
+        });
+
+        debtor.amount -= minAmount;
+        creditor.amount -= minAmount;
+
+        if (debtor.amount < 0.01) i++;
+        if (creditor.amount < 0.01) j++;
+      }
+
+      // Renderizar resultados
+      const container = document.getElementById('transfersContainer');
+      const resultsPanel = document.getElementById('gastosResultsPanel');
+
+      if (transfers.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color: var(--neon-green);">¡Todos gastaron exactamente lo mismo! Nadie debe nada. 🎉</div>';
+      } else {
+        let html = `<div style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Costo por persona: <strong style="color:#fff;">$${formatMoney(perPersonShare)}</strong></div>`;
+        
+        transfers.forEach(t => {
+          html += `
+            <div class="transfer-card">
+              <span style="font-weight:700; color:#fff;">${t.from}</span>
+              <span class="transfer-arrow">➔ le pasa $${formatMoney(t.amount)} a ➔</span>
+              <span style="font-weight:700; color:var(--neon-green);">${t.to}</span>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      resultsPanel.style.display = 'flex';
+      resultsPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetGastosGame() {
+      document.getElementById('gastosResultsPanel').style.display = 'none';
+      document.getElementById('gastosBoard').style.display = 'none';
+      document.getElementById('gastosStep1').style.display = 'flex';
     }
   </script>
 </body>
