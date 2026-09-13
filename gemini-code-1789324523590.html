@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>El Octógono - Multijuegos Cyberpunk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      
+      /* Neon Accent Palette */
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff0055;
+      --neon-purple: #b026ff;
+      --neon-yellow: #ffe600;
+      --neon-green: #00ff66;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+
+      --current-neon: var(--neon-cyan);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Rajdhani', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(176, 38, 255, 0.15), transparent 70%),
+        radial-gradient(circle at 80% 80%, rgba(0, 243, 255, 0.1), transparent 50%),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      padding-bottom: 90px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* HEADER SUPERIOR */
+    header.top-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      z-index: 10;
+    }
+
+    .brand-logo-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-cyan);
+      transition: transform 0.3s ease;
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 0 12px var(--neon-cyan), 0 0 25px rgba(0, 243, 255, 0.6);
+      line-height: 1;
+    }
+
+    /* NAVEGACIÓN FUTURISTA */
+    nav.nav-menu {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 800px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 8px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(0, 243, 255, 0.1);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      backdrop-filter: blur(12px);
+      margin-bottom: 20px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 10px 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(0, 243, 255, 0.2);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+      text-shadow: 0 0 6px var(--neon-cyan);
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* SECCIONES DE JUEGO */
+    .game-mode {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-mode.active {
+      display: flex;
+    }
+
+    .mode-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px var(--current-neon);
+    }
+
+    /* CONTROLES GENERALES */
+    .setup-panel {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      padding: 20px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 450px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .setup-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setup-group label {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .setup-group select, .setup-group input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 243, 255, 0.4);
+      background: rgba(3, 7, 18, 0.9);
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .primary-btn {
+      margin-top: 10px;
+      padding: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #030712;
+      background: var(--neon-cyan);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+    }
+
+    /* RULETA FUTURISTA */
+    .wheel-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      width: min(80vw, 300px);
+      height: min(80vw, 300px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -12px;
+      z-index: 10;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 20px solid var(--neon-yellow);
+      filter: drop-shadow(0 0 6px var(--neon-yellow));
+    }
+
+    canvas.wheel-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+      transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);
+    }
+
+    .spin-btn {
+      margin-top: 25px;
+      padding: 12px 35px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #030712;
+      background: var(--neon-cyan);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* MAZO Y CARTAS */
+    .deck-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .category-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--current-neon);
+      text-shadow: 0 0 8px var(--current-neon);
+      text-align: center;
+    }
+
+    .card-container {
+      perspective: 1000px;
+      width: min(85vw, 300px);
+      height: min(115vw, 390px);
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border: 2px solid var(--current-neon);
+      backdrop-filter: blur(10px);
+    }
+
+    .card-back {
+      background: rgba(15, 23, 42, 0.95);
+      background-image: radial-gradient(var(--current-neon) 1px, transparent 1px);
+      background-size: 15px 15px;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .card-back-logo {
+      width: 75px;
+      height: 75px;
+      border: 2px solid var(--current-neon);
+      transform: rotate(45deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 12px var(--current-neon);
+    }
+
+    .card-back-logo span {
+      transform: rotate(-45deg);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      color: #fff;
+      font-size: 0.75rem;
+    }
+
+    .card-front {
+      background: rgba(255, 255, 255, 0.96);
+      color: #030712;
+      transform: rotateY(180deg);
+    }
+
+    .card-category-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #030712;
+      background: var(--current-neon);
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .card-question {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .card-footer {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: min(85vw, 300px);
+      margin-top: 15px;
+    }
+
+    .action-btn {
+      padding: 12px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      background: transparent;
+      color: #fff;
+      border: 1px solid var(--current-neon);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* MODO IMPOSTOR */
+    .gameplay-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .player-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      width: min(85vw, 320px);
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .player-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+    }
+
+    .secret-box {
+      width: 100%;
+      min-height: 120px;
+      background: rgba(3, 7, 18, 0.9);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .toggle-reveal-btn {
+      padding: 12px;
+      width: 100%;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* MODO ¿QUIÉN SOY? GRID RESPONSIVE */
+    .players-inputs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .grid-card-container {
+      perspective: 1000px;
+      height: 150px;
+      cursor: pointer;
+    }
+
+    .grid-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .grid-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .grid-card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+      border: 2px solid var(--neon-purple);
+      backdrop-filter: blur(8px);
+    }
+
+    .grid-card-back {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .grid-player-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 6px var(--neon-purple);
+      word-break: break-word;
+    }
+
+    .grid-click-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .grid-card-front {
+      background: rgba(255, 255, 255, 0.98);
+      color: #030712;
+      transform: rotateY(180deg);
+    }
+
+    .grid-result-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--neon-purple);
+      margin-top: 5px;
+      word-break: break-word;
+    }
+
+    /* MEDIA QUERIES MOBILE ADAPTATION */
+    @media (max-width: 640px) {
+      header.top-header {
+        gap: 14px;
+        margin-top: 10px;
+        margin-bottom: 25px;
+      }
+
+      .brand-logo-img {
+        width: 64px;
+        height: 64px;
+        border-width: 3px;
+        box-shadow: 0 0 20px var(--neon-cyan);
+      }
+
+      .brand-title {
+        font-size: 1.85rem;
+        letter-spacing: 2px;
+      }
+
+      nav.nav-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 16px 16px 0 0;
+        border-bottom: none;
+        z-index: 1000;
+        padding: 10px 5px;
+        background: rgba(3, 7, 18, 0.95);
+      }
+
+      .nav-btn {
+        font-size: 0.65rem;
+        padding: 8px 4px;
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 641px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <img src="https://lh3.googleusercontent.com/d/1KiHr6xVBzMGebAZ-iG-4LdGbYg88WGdT" alt="Logo El Octógono" class="brand-logo-img">
+    <div class="brand-title">El Octógono</div>
+  </header>
+
+  <!-- NAVEGACIÓN -->
+  <nav class="nav-menu">
+    <button class="nav-btn active" id="navPreguntas" onclick="switchMode('preguntas')">Preguntas</button>
+    <button class="nav-btn" id="navSexo" onclick="switchMode('sexo')">Sexo 🔥</button>
+    <button class="nav-btn" id="navImpostor" onclick="switchMode('impostor')">Impostor 🤫</button>
+    <button class="nav-btn" id="navQueSoy" onclick="switchMode('quesoy')">¿Quién soy? 🤔</button>
+  </nav>
+
+  <div class="game-container">
+    
+    <!-- ==================== MODO PREGUNTAS ==================== -->
+    <div class="game-mode active" id="modePreguntas" style="--current-neon: var(--neon-cyan);">
+      <div class="mode-title">Preguntas</div>
+      
+      <div class="wheel-section" id="wheelSectionPreguntas">
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+          <canvas class="wheel-canvas" id="canvasPreguntas" width="300" height="300"></canvas>
+        </div>
+        <button class="spin-btn" id="spinBtnPreguntas" onclick="spinWheel('preguntas')">GIRAR RULETA</button>
+      </div>
+
+      <div class="deck-section" id="deckSectionPreguntas">
+        <div class="category-title" id="categoryTitlePreguntas">Categoría</div>
+        <div class="card-container" onclick="flipCard('Preguntas')">
+          <div class="card" id="cardPreguntas">
+            <div class="card-face card-back">
+              <div class="card-back-logo"><span>OCTÓGONO</span></div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">TOCA PARA REVELAR</p>
+            </div>
+            <div class="card-face card-front">
+              <div class="card-category-tag" id="cardCategoryTagPreguntas">Categoría</div>
+              <div class="card-question" id="cardQuestionPreguntas">¿Cargando pregunta...?</div>
+              <div class="card-footer">EL OCTÓGONO</div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="action-btn" id="nextQuestionBtnPreguntas" onclick="drawQuestion('preguntas')" style="display:none;">Siguiente Pregunta</button>
+          <button class="action-btn" onclick="resetToWheel('preguntas')">Girar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODO SEXO ==================== -->
+    <div class="game-mode" id="modeSexo" style="--current-neon: var(--neon-pink);">
+      <div class="mode-title" style="color: var(--neon-pink);">Modo Sexo 🔥</div>
+      
+      <div class="wheel-section" id="wheelSectionSexo">
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+          <canvas class="wheel-canvas" id="canvasSexo" width="300" height="300"></canvas>
+        </div>
+        <button class="spin-btn" id="spinBtnSexo" style="background: var(--neon-pink); box-shadow: 0 0 15px var(--neon-pink);" onclick="spinWheel('sexo')">GIRAR RULETA</button>
+      </div>
+
+      <div class="deck-section" id="deckSectionSexo">
+        <div class="category-title" id="categoryTitleSexo">Categoría</div>
+        <div class="card-container" onclick="flipCard('Sexo')">
+          <div class="card" id="cardSexo">
+            <div class="card-face card-back">
+              <div class="card-back-logo"><span>MODO SEXO</span></div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">TOCA PARA REVELAR</p>
+            </div>
+            <div class="card-face card-front">
+              <div class="card-category-tag" id="cardCategoryTagSexo">Categoría</div>
+              <div class="card-question" id="cardQuestionSexo">¿Cargando pregunta...?</div>
+              <div class="card-footer">EL OCTÓGONO · SEXO</div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="action-btn" id="nextQuestionBtnSexo" onclick="drawQuestion('sexo')" style="display:none;">Siguiente Pregunta</button>
+          <button class="action-btn" onclick="resetToWheel('sexo')">Girar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODO EL IMPOSTOR ==================== -->
+    <div class="game-mode" id="modeImpostor" style="--current-neon: var(--neon-yellow);">
+      <div class="mode-title" style="color: var(--neon-yellow);">El Impostor 🤫</div>
+
+      <!-- CONFIGURACIÓN: Primero se selecciona cantidad, impostores y categoría -->
+      <div class="setup-panel" id="impostorSetup" style="border-color: var(--neon-yellow); display: flex;">
+        <div class="setup-group">
+          <label for="playerCount" style="color: var(--neon-yellow);">Cantidad de Jugadores:</label>
+          <select id="playerCount" onchange="updateImpostorOptions()">
+            <option value="3">3 Jugadores</option>
+            <option value="4" selected>4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+            <option value="7">7 Jugadores</option>
+            <option value="8">8 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="impostorCount" style="color: var(--neon-yellow);">Cantidad de Impostores:</label>
+          <select id="impostorCount">
+            <option value="1" selected>1 Impostor</option>
+            <option value="2">2 Impostores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="impostorCategory" style="color: var(--neon-yellow);">Categoría:</label>
+          <select id="impostorCategory">
+            <option value="comida">🍔 Comida y Bebidas</option>
+            <option value="paises">✈️ Países y Ciudades</option>
+            <option value="peliculas">🎬 Películas y Series</option>
+            <option value="animales">🦁 Animales</option>
+            <option value="objetos">📱 Objetos y Tecnología</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow);" onclick="startImpostorGame()">INICIAR PARTIDA</button>
+      </div>
+
+      <!-- TARJETA INDIVIDUAL (Se muestra sólo después de INICIAR PARTIDA) -->
+      <div class="gameplay-panel" id="impostorGameplay" style="display: none;">
+        <div class="player-card" style="border: 2px solid var(--neon-yellow);">
+          <div class="player-name" id="impostorPlayerName" style="color: var(--neon-yellow);">Jugador 1</div>
+          
+          <div class="secret-box">
+            <span style="color: var(--text-muted); font-size: 0.85rem;" id="secretPlaceholder">Pasa el dispositivo al jugador y toca para revelar.</span>
+            <div id="secretContent" style="display: none;"></div>
+          </div>
+
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
+            <button class="toggle-reveal-btn" id="toggleRevealBtn" style="background: var(--neon-yellow); color: #030712;" onclick="toggleRevealRole()">VER ROL</button>
+            <button class="action-btn" id="nextPlayerBtn" onclick="nextImpostorTurn()" style="display: none; border-color: var(--neon-yellow);">Siguiente ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANTALLA FINAL -->
+      <div class="setup-panel" id="impostorSummary" style="display: none; border-color: var(--neon-yellow); text-align: center;">
+        <h2 style="color: var(--neon-yellow); font-family: Orbitron; margin-bottom: 10px; font-size: 1.2rem;">¡Todos vieron su rol!</h2>
+        <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px; color: var(--text-muted);">
+          Realicen preguntas por turnos.<br><strong style="color: #fff;">¡Descubran al Impostor!</strong>
+        </p>
+        <button class="primary-btn" style="background: var(--neon-yellow);" onclick="resetImpostorSetup()">NUEVA PARTIDA</button>
+      </div>
+    </div>
+
+    <!-- ==================== MODO ¿QUIÉN SOY? ==================== -->
+    <div class="game-mode" id="modeQueSoy" style="--current-neon: var(--neon-purple);">
+      <div class="mode-title" style="color: var(--neon-purple);">¿Quién soy? 🤔</div>
+
+      <!-- PASO 1 -->
+      <div class="setup-panel" id="queSoyStep1" style="border-color: var(--neon-purple);">
+        <div class="setup-group">
+          <label for="queSoyPlayerCount" style="color: var(--neon-purple);">Cantidad de Jugadores:</label>
+          <select id="queSoyPlayerCount">
+            <option value="2">2 Jugadores</option>
+            <option value="3">3 Jugadores</option>
+            <option value="4" selected>4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+            <option value="7">7 Jugadores</option>
+            <option value="8">8 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="queSoyCategory" style="color: var(--neon-purple);">Categoría:</label>
+          <select id="queSoyCategory">
+            <option value="edades">🎂 Edades (1 a 100)</option>
+            <option value="paises">✈️ Países del Mundo</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="goToQueSoyStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="setup-panel" id="queSoyStep2" style="display: none; border-color: var(--neon-purple);">
+        <div style="font-family: Orbitron; color: var(--neon-purple); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Jugadores</div>
+        <div class="players-inputs-container" id="playersInputsContainer"></div>
+
+        <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="generateQueSoyCards()">REPARTIR TARJETAS 🚀</button>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="gameplay-panel" id="queSoyBoard" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="cards-grid" id="cardsGrid"></div>
+        <button class="action-btn" style="margin-top: 20px; border-color: var(--neon-purple); width: min(85vw, 300px);" onclick="resetQueSoyGame()">Nueva Partida</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // DATA GENERAL
+    const questionsPreguntas = {
+      profundas: [
+        "¿Cuál es tu mayor miedo irracional y de dónde crees que viene?",
+        "Si pudieras cambiar una sola decisión de tu pasado, ¿cuál sería?",
+        "¿Qué significa realmente el éxito para ti?",
+        "¿Cuál es la lección más dura que has aprendido en la vida?",
+        "¿Qué es algo que nunca le has contado a tus padres?",
+        "¿Cuándo fue la última vez que lloraste y por qué?",
+        "¿Qué cualidad valoras más en una amistad genuina?"
+      ],
+      reto: [
+        "Haz 15 flexiones de brazos o abdominales ahora mismo.",
+        "Imita a alguien del grupo hasta que adivinen quién es.",
+        "Muestra la última foto de tu galería de imágenes.",
+        "Deja que la persona a tu derecha mande un mensaje desde tu celular.",
+        "Habla con acento extranjero durante las próximas 3 rondas."
+      ],
+      picantes: [
+        "¿Quién del grupo te parece más atractivo/a físicamente?",
+        "¿Cuál ha sido tu fantasía más recurrente?",
+        "¿Qué es lo más atrevido que has hecho en una cita?",
+        "¿Alguna vez has tenido un sueño erótico con alguien presente aquí?"
+      ]
+    };
+
+    const questionsSexo = {
+      suaves: [
+        "¿Cuál es tu tipo de ropa interior favorita en la otra persona?",
+        "¿Prefieres mañanero o por la noche antes de dormir?",
+        "¿Qué zona de tu cuerpo es más sensible a los besos suaves?",
+        "¿Prefieres luces encendidas o a oscuras?"
+      ],
+      medias: [
+        "¿Cuál es la postura sexual en la que sientes más control?",
+        "¿Has practicado sexo en un lugar donde podían descubrirte?",
+        "¿Qué fetiche popular te genera curiosidad real?",
+        "¿Cuál es tu posición preferida para un orgasmo rápido?"
+      ],
+      extremas: [
+        "Describe tu fantasía sexual más oscura.",
+        "¿Cuál ha sido la experiencia sexual más salvaje de tu vida?",
+        "¿En qué lugar ridículamente público has tenido relaciones?",
+        "¿Qué persona de este grupo elegirías para cumplir una fantasía?"
+      ]
+    };
+
+    const impostorWords = {
+      comida: ["Pizza", "Hamburguesa", "Sushi", "Tacos", "Asado", "Empanadas", "Helado", "Milanesa"],
+      paises: ["Argentina", "Brasil", "Japón", "Francia", "Italia", "España", "Egipto", "México"],
+      peliculas: ["Titanic", "Avatar", "Harry Potter", "Star Wars", "El Padrino", "Avengers", "Matrix"],
+      animales: ["León", "Elefante", "Perro", "Gato", "Delfín", "Tiburón", "Jirafa"],
+      objetos: ["Celular", "Computadora", "Televisor", "Auriculares", "Reloj", "Bicicleta"]
+    };
+
+    const paisesQueSoy = [
+      "Argentina", "Brasil", "Chile", "Uruguay", "Colombia", "Perú", "México", "España", 
+      "Francia", "Italia", "Alemania", "Japón", "China", "Egipto", "Canadá", "EE.UU."
+    ];
+
+    const categoriesPreguntas = [
+      { name: 'Profundas', color: '#00f3ff', textColor: '#030712', key: 'profundas' },
+      { name: 'Reto', color: '#ffe600', textColor: '#030712', key: 'reto' },
+      { name: 'Picantes', color: '#ff0055', textColor: '#ffffff', key: 'picantes' }
+    ];
+
+    const categoriesSexo = [
+      { name: 'Suaves', color: '#00ff66', textColor: '#030712', key: 'suaves' },
+      { name: 'Medias', color: '#b026ff', textColor: '#ffffff', key: 'medias' },
+      { name: 'Extremas', color: '#ff0055', textColor: '#ffffff', key: 'extremas' }
+    ];
+
+    let currentMode = 'preguntas';
+    let state = {
+      preguntas: { angle: 0, spinning: false, key: '' },
+      sexo: { angle: 0, spinning: false, key: '' }
+    };
+
+    function drawWheel(mode) {
+      const isPreguntas = mode === 'preguntas';
+      const canvas = document.getElementById(isPreguntas ? 'canvasPreguntas' : 'canvasSexo');
+      const ctx = canvas.getContext('2d');
+      const cats = isPreguntas ? categoriesPreguntas : categoriesSexo;
+
+      const numSlices = cats.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSlices; i++) {
+        const angle = i * sliceAngle;
+        
+        ctx.beginPath();
+        ctx.fillStyle = cats[i].color;
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, 150, angle, angle + sliceAngle);
+        ctx.lineTo(150, 150);
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#030712';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(angle + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = cats[i].textColor;
+        ctx.font = "bold 15px Orbitron";
+        ctx.fillText(cats[i].name, 130, 5);
+        ctx.restore();
+      }
+    }
+
+    drawWheel('preguntas');
+    drawWheel('sexo');
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.game-mode').forEach(m => m.classList.remove('active'));
+
+      if(mode === 'preguntas') {
+        document.getElementById('navPreguntas').classList.add('active');
+        document.getElementById('modePreguntas').classList.add('active');
+      } else if(mode === 'sexo') {
+        document.getElementById('navSexo').classList.add('active');
+        document.getElementById('modeSexo').classList.add('active');
+      } else if(mode === 'impostor') {
+        document.getElementById('navImpostor').classList.add('active');
+        document.getElementById('modeImpostor').classList.add('active');
+      } else if(mode === 'quesoy') {
+        document.getElementById('navQueSoy').classList.add('active');
+        document.getElementById('modeQueSoy').classList.add('active');
+      }
+    }
+
+    function spinWheel(mode) {
+      const st = state[mode];
+      if (st.spinning) return;
+
+      st.spinning = true;
+      const isPreguntas = mode === 'preguntas';
+      const btn = document.getElementById(isPreguntas ? 'spinBtnPreguntas' : 'spinBtnSexo');
+      const canvas = document.getElementById(isPreguntas ? 'canvasPreguntas' : 'canvasSexo');
+      const cats = isPreguntas ? categoriesPreguntas : categoriesSexo;
+
+      btn.disabled = true;
+
+      const extraDegrees = Math.floor(Math.random() * 360);
+      const totalRotation = (5 * 360) + extraDegrees;
+
+      st.angle += totalRotation;
+      canvas.style.transform = `rotate(${st.angle}deg)`;
+
+      setTimeout(() => {
+        st.spinning = false;
+        const actualDeg = st.angle % 360;
+        const effectiveDeg = (360 - (actualDeg % 360) + 270) % 360;
+        const sliceAngleDeg = 360 / cats.length;
+        const selectedIndex = Math.floor(effectiveDeg / sliceAngleDeg);
+        
+        const selectedCat = cats[selectedIndex];
+        st.key = selectedCat.key;
+
+        openDeck(mode, selectedCat);
+      }, 4000);
+    }
+
+    function openDeck(mode, category) {
+      const isPreguntas = mode === 'preguntas';
+      document.getElementById(isPreguntas ? 'wheelSectionPreguntas' : 'wheelSectionSexo').style.display = 'none';
+      document.getElementById(isPreguntas ? 'deckSectionPreguntas' : 'deckSectionSexo').style.display = 'flex';
+
+      document.getElementById(isPreguntas ? 'modePreguntas' : 'modeSexo').style.setProperty('--current-neon', category.color);
+
+      document.getElementById(isPreguntas ? 'categoryTitlePreguntas' : 'categoryTitleSexo').innerText = category.name;
+      document.getElementById(isPreguntas ? 'cardCategoryTagPreguntas' : 'cardCategoryTagSexo').innerText = category.name;
+      
+      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
+      card.classList.remove('flipped');
+
+      drawQuestion(mode);
+    }
+
+    function flipCard(modeType) {
+      const isPreguntas = modeType === 'Preguntas';
+      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
+      card.classList.toggle('flipped');
+      
+      if(card.classList.contains('flipped')) {
+        document.getElementById(isPreguntas ? 'nextQuestionBtnPreguntas' : 'nextQuestionBtnSexo').style.display = 'block';
+      }
+    }
+
+    function drawQuestion(mode) {
+      const isPreguntas = mode === 'preguntas';
+      const card = document.getElementById(isPreguntas ? 'cardPreguntas' : 'cardSexo');
+      
+      if (card.classList.contains('flipped')) {
+        card.classList.remove('flipped');
+        setTimeout(() => setRandomQuestion(mode), 300);
+      } else {
+        setRandomQuestion(mode);
+      }
+    }
+
+    function setRandomQuestion(mode) {
+      const isPreguntas = mode === 'preguntas';
+      const questionsBank = isPreguntas ? questionsPreguntas : questionsSexo;
+      const key = state[mode].key;
+      const categoryQuestions = questionsBank[key];
+
+      const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+      document.getElementById(isPreguntas ? 'cardQuestionPreguntas' : 'cardQuestionSexo').innerText = categoryQuestions[randomIndex];
+    }
+
+    function resetToWheel(mode) {
+      const isPreguntas = mode === 'preguntas';
+      document.getElementById(isPreguntas ? 'deckSectionPreguntas' : 'deckSectionSexo').style.display = 'none';
+      document.getElementById(isPreguntas ? 'wheelSectionPreguntas' : 'wheelSectionSexo').style.display = 'flex';
+      document.getElementById(isPreguntas ? 'spinBtnPreguntas' : 'spinBtnSexo').disabled = false;
+      document.getElementById(isPreguntas ? 'nextQuestionBtnPreguntas' : 'nextQuestionBtnSexo').style.display = 'none';
+    }
+
+    // IMPOSTOR LOGIC
+    let impostorState = { totalPlayers: 4, totalImpostors: 1, currentPlayerIndex: 0, impostorIndices: [], secretWord: '', isRevealed: false };
+
+    function updateImpostorOptions() {
+      const players = parseInt(document.getElementById('playerCount').value);
+      const impostorSelect = document.getElementById('impostorCount');
+      impostorSelect.innerHTML = '<option value="1" selected>1 Impostor</option>';
+      if (players >= 6) {
+        impostorSelect.innerHTML += '<option value="2">2 Impostores</option>';
+      }
+    }
+
+    function startImpostorGame() {
+      impostorState.totalPlayers = parseInt(document.getElementById('playerCount').value);
+      impostorState.totalImpostors = parseInt(document.getElementById('impostorCount').value);
+      impostorState.currentPlayerIndex = 0;
+      impostorState.impostorIndices = [];
+
+      while (impostorState.impostorIndices.length < impostorState.totalImpostors) {
+        const randIndex = Math.floor(Math.random() * impostorState.totalPlayers);
+        if (!impostorState.impostorIndices.includes(randIndex)) impostorState.impostorIndices.push(randIndex);
+      }
+
+      const catList = impostorWords[document.getElementById('impostorCategory').value];
+      impostorState.secretWord = catList[Math.floor(Math.random() * catList.length)];
+
+      document.getElementById('impostorSetup').style.display = 'none';
+      document.getElementById('impostorSummary').style.display = 'none';
+      document.getElementById('impostorGameplay').style.display = 'flex';
+
+      updateImpostorCardView();
+    }
+
+    function updateImpostorCardView() {
+      impostorState.isRevealed = false;
+      document.getElementById('impostorPlayerName').innerText = `Jugador ${impostorState.currentPlayerIndex + 1}`;
+      document.getElementById('secretPlaceholder').style.display = 'block';
+      document.getElementById('secretContent').style.display = 'none';
+      document.getElementById('toggleRevealBtn').innerText = 'VER ROL';
+      document.getElementById('nextPlayerBtn').style.display = 'none';
+    }
+
+    function toggleRevealRole() {
+      impostorState.isRevealed = !impostorState.isRevealed;
+      const placeholder = document.getElementById('secretPlaceholder');
+      const content = document.getElementById('secretContent');
+      const btn = document.getElementById('toggleRevealBtn');
+      const nextBtn = document.getElementById('nextPlayerBtn');
+
+      if (impostorState.isRevealed) {
+        placeholder.style.display = 'none';
+        content.style.display = 'block';
+        btn.innerText = 'OCULTAR';
+        nextBtn.style.display = 'block';
+
+        const isImpostor = impostorState.impostorIndices.includes(impostorState.currentPlayerIndex);
+        if (isImpostor) {
+          content.innerHTML = `<div style="color:var(--neon-pink); font-family:Orbitron; font-size:1.1rem; font-weight:900;">🤫 ERES EL IMPOSTOR</div>`;
+        } else {
+          content.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted);">PALABRA SECRETA:</div><div style="font-family:Orbitron; font-size:1.3rem; color:var(--neon-yellow); font-weight:900;">${impostorState.secretWord}</div>`;
+        }
+      } else {
+        placeholder.style.display = 'block';
+        content.style.display = 'none';
+        btn.innerText = 'VER ROL';
+      }
+    }
+
+    function nextImpostorTurn() {
+      impostorState.currentPlayerIndex++;
+      if (impostorState.currentPlayerIndex < impostorState.totalPlayers) {
+        updateImpostorCardView();
+      } else {
+        document.getElementById('impostorGameplay').style.display = 'none';
+        document.getElementById('impostorSummary').style.display = 'flex';
+      }
+    }
+
+    function resetImpostorSetup() {
+      document.getElementById('impostorSummary').style.display = 'none';
+      document.getElementById('impostorGameplay').style.display = 'none';
+      document.getElementById('impostorSetup').style.display = 'flex';
+    }
+
+    // MODO ¿QUIÉN SOY?
+    let queSoyData = { category: 'edades', players: [] };
+
+    function goToQueSoyStep2() {
+      const count = parseInt(document.getElementById('queSoyPlayerCount').value);
+      queSoyData.category = document.getElementById('queSoyCategory').value;
+      
+      const container = document.getElementById('playersInputsContainer');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-purple);">Jugador ${i}</label>
+          <input type="text" id="queSoyPlayerInput_${i}" placeholder="Nombre jugador ${i}" value="Jugador ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('queSoyStep1').style.display = 'none';
+      document.getElementById('queSoyStep2').style.display = 'flex';
+    }
+
+    function generateQueSoyCards() {
+      const count = parseInt(document.getElementById('queSoyPlayerCount').value);
+      queSoyData.players = [];
+
+      let assignedValues = [];
+      if (queSoyData.category === 'edades') {
+        let pool = Array.from({length: 99}, (_, i) => i + 1);
+        for(let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * pool.length);
+          assignedValues.push(`${pool[idx]} años`);
+          pool.splice(idx, 1);
+        }
+      } else {
+        let pool = [...paisesQueSoy];
+        for(let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * pool.length);
+          assignedValues.push(pool[idx]);
+          pool.splice(idx, 1);
+        }
+      }
+
+      for(let i = 1; i <= count; i++) {
+        const inputName = document.getElementById(`queSoyPlayerInput_${i}`).value.trim();
+        const playerName = inputName !== '' ? inputName : `Jugador ${i}`;
+        queSoyData.players.push({
+          name: playerName,
+          value: assignedValues[i - 1]
+        });
+      }
+
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
+
+      queSoyData.players.forEach((p, idx) => {
+        const cardElem = document.createElement('div');
+        cardElem.className = 'grid-card-container';
+        cardElem.onclick = () => flipGridCard(idx);
+
+        cardElem.innerHTML = `
+          <div class="grid-card" id="gridCard_${idx}">
+            <div class="grid-card-face grid-card-back">
+              <div class="grid-player-title">${p.name}</div>
+              <div class="grid-click-hint">Toca para dar vuelta</div>
+            </div>
+            <div class="grid-card-face grid-card-front">
+              <div style="font-size:0.75rem; color:var(--text-muted); font-family:Orbitron;">${p.name} ES:</div>
+              <div class="grid-result-value">${p.value}</div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(cardElem);
+      });
+
+      document.getElementById('queSoyStep2').style.display = 'none';
+      document.getElementById('queSoyBoard').style.display = 'flex';
+    }
+
+    function flipGridCard(index) {
+      const card = document.getElementById(`gridCard_${index}`);
+      card.classList.toggle('flipped');
+    }
+
+    function resetQueSoyGame() {
+      document.getElementById('queSoyBoard').style.display = 'none';
+      document.getElementById('queSoyStep1').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
