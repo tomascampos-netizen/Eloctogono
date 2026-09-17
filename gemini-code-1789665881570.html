@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>El Octógono - Multijuegos Cyberpunk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      
+      /* Neon Accent Palette */
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff0055;
+      --neon-purple: #b026ff;
+      --neon-yellow: #ffe600;
+      --neon-green: #00ff66;
+      --neon-orange: #ff9900;
+      --neon-red: #ff0033;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+
+      --current-neon: var(--neon-cyan);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Rajdhani', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(176, 38, 255, 0.15), transparent 70%),
+        radial-gradient(circle at 80% 80%, rgba(0, 243, 255, 0.1), transparent 50%),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      padding-top: 80px;
+      padding-bottom: 50px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR Y MENÚ HAMBURGUESA */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      background: rgba(3, 7, 18, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .hamburger-btn {
+      background: transparent;
+      border: none;
+      color: var(--neon-cyan);
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 5px;
+      z-index: 101;
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 100%;
+      height: 3px;
+      background-color: var(--neon-cyan);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--neon-cyan);
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn.open span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger-btn.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-btn.open span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* MENÚ DESPLEGABLE SIDEBAR */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.98);
+      border-left: 2px solid var(--neon-cyan);
+      backdrop-filter: blur(15px);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      padding-top: 80px;
+      padding-left: 20px;
+      padding-right: 20px;
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+      overflow-y: auto;
+    }
+
+    .side-menu.open {
+      right: 0;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 98;
+      display: none;
+    }
+
+    .menu-overlay.open {
+      display: block;
+    }
+
+    .side-menu-item {
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .side-menu-item:hover, .side-menu-item.active {
+      background: rgba(0, 243, 255, 0.15);
+      border-color: var(--neon-cyan);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+
+    /* HEADER SUPERIOR */
+    header.top-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 10px;
+      margin-bottom: 25px;
+      cursor: pointer;
+    }
+
+    .brand-logo-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-cyan);
+      transition: transform 0.3s ease;
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 0 12px var(--neon-cyan), 0 0 25px rgba(0, 243, 255, 0.6);
+      line-height: 1;
+    }
+
+    /* LANDING HUB / CARDS PRINCIPALES */
+    .landing-hub {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .hub-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .hub-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .hub-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--card-accent, var(--neon-cyan));
+      box-shadow: 0 0 10px var(--card-accent, var(--neon-cyan));
+    }
+
+    .hub-card:hover {
+      transform: translateY(-5deg);
+      border-color: var(--card-accent, var(--neon-cyan));
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--card-accent, var(--neon-cyan));
+    }
+
+    .hub-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .hub-card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hub-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .hub-card-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: transparent;
+      color: var(--card-accent, var(--neon-cyan));
+      border: 1px solid var(--card-accent, var(--neon-cyan));
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .hub-card:hover .hub-card-btn {
+      background: var(--card-accent, var(--neon-cyan));
+      color: #030712;
+      box-shadow: 0 0 12px var(--card-accent, var(--neon-cyan));
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .game-mode {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-mode.active {
+      display: flex;
+    }
+
+    .mode-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px var(--current-neon);
+    }
+
+    .back-to-hub-btn {
+      align-self: flex-start;
+      background: transparent;
+      border: 1px solid var(--text-muted);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .back-to-hub-btn:hover {
+      color: #fff;
+      border-color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .setup-panel {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      padding: 20px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 450px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .setup-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setup-group label {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .setup-group select, .setup-group input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 243, 255, 0.4);
+      background: rgba(3, 7, 18, 0.9);
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .primary-btn {
+      margin-top: 10px;
+      padding: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #030712;
+      background: var(--neon-cyan);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+    }
+
+    /* RULETA FUTURISTA */
+    .wheel-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      width: min(80vw, 300px);
+      height: min(80vw, 300px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -12px;
+      z-index: 10;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 20px solid var(--neon-yellow);
+      filter: drop-shadow(0 0 6px var(--neon-yellow));
+    }
+
+    canvas.wheel-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+      transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);
+    }
+
+    .spin-btn {
+      margin-top: 25px;
+      padding: 12px 35px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #030712;
+      background: var(--neon-cyan);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* MAZO Y CARTAS */
+    .deck-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .category-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--current-neon);
+      text-shadow: 0 0 8px var(--current-neon);
+      text-align: center;
+    }
+
+    .card-container {
+      width: min(85vw, 300px);
+      height: min(115vw, 390px);
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .card-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border: 2px solid var(--current-neon);
+      backdrop-filter: blur(10px);
+    }
+
+    .card-front {
+      background: rgba(255, 255, 255, 0.96);
+      color: #030712;
+    }
+
+    .card-category-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #030712;
+      background: var(--current-neon);
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .card-question {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .card-footer-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .question-counter {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--current-neon);
+      background: #030712;
+      padding: 3px 10px;
+      border-radius: 8px;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: min(85vw, 300px);
+      margin-top: 15px;
+    }
+
+    .action-btn {
+      padding: 12px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      background: transparent;
+      color: #fff;
+      border: 1px solid var(--current-neon);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* MODO IMPOSTOR Y VOTACIONES */
+    .gameplay-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .player-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      width: min(85vw, 320px);
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .player-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+    }
+
+    .secret-box {
+      width: 100%;
+      min-height: 120px;
+      background: rgba(3, 7, 18, 0.9);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .toggle-reveal-btn {
+      padding: 12px;
+      width: 100%;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* MODO VOTACIONES - BARRAS Y LISTAS */
+    .vote-option-btn {
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--neon-red);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-align: center;
+    }
+
+    .vote-option-btn:hover {
+      background: rgba(255, 0, 51, 0.2);
+      box-shadow: 0 0 12px var(--neon-red);
+    }
+
+    .result-bar-container {
+      width: 100%;
+      margin-bottom: 12px;
+      background: rgba(3, 7, 18, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 0, 51, 0.3);
+    }
+
+    .result-bar-info {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .result-bar-fill-bg {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .result-bar-fill {
+      height: 100%;
+      background: var(--neon-red);
+      box-shadow: 0 0 10px var(--neon-red);
+      transition: width 0.5s ease-in-out;
+    }
+
+    /* MODO ¿QUIÉN SOY? */
+    .players-inputs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .grid-card-container {
+      perspective: 1000px;
+      height: 150px;
+      cursor: pointer;
+    }
+
+    .grid-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .grid-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .grid-card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+      border: 2px solid var(--neon-purple);
+      backdrop-filter: blur(8px);
+    }
+
+    .grid-card-back {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .grid-player-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 6px var(--neon-purple);
+      word-break: break-word;
+    }
+
+    .grid-click-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .grid-card-front {
+      background: rgba(255, 255, 255, 0.98);
+      color: #030712;
+      transform: rotateY(180deg);
+    }
+
+    .grid-result-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--neon-purple);
+      margin-top: 5px;
+      word-break: break-word;
+    }
+
+    /* MODO TORNEO FIFA */
+    .tournament-board {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .group-card {
+      background: var(--card-bg);
+      border: 1px solid var(--neon-green);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+    }
+
+    .group-title {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-green);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--neon-green);
+    }
+
+    .group-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .group-table th, .group-table td {
+      padding: 6px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .group-table th {
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+    }
+
+    .match-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(3, 7, 18, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(0, 255, 102, 0.2);
+    }
+
+    .match-team {
+      flex: 1;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .match-score-input {
+      width: 35px;
+      text-align: center;
+      background: #030712;
+      border: 1px solid var(--neon-green);
+      color: #fff;
+      border-radius: 4px;
+      padding: 4px;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .tree-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      width: 100%;
+      overflow-x: auto;
+      padding: 10px 5px;
+    }
+
+    .tree-round {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      min-width: 140px;
+      flex: 1;
+      gap: 20px;
+    }
+
+    .tree-round-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      color: var(--neon-green);
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-shadow: 0 0 5px var(--neon-green);
+    }
+
+    .tree-match {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .tree-team {
+      padding: 8px 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .tree-team:first-child {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 7px 7px 0 0;
+    }
+
+    .tree-team:last-child {
+      border-radius: 0 0 7px 7px;
+    }
+
+    .tree-team.winner {
+      background: rgba(0, 255, 102, 0.25);
+      color: var(--neon-green);
+      font-weight: 900;
+      text-shadow: 0 0 5px var(--neon-green);
+    }
+
+    .tree-team.empty {
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    /* SECCIÓN GASTOS FUTURISTA */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+      background: rgba(3, 7, 18, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 153, 0, 0.3);
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      accent-color: var(--neon-orange);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .expense-card {
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(255, 153, 0, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .expense-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .expense-desc {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .expense-payers {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .expense-amount {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: var(--neon-orange);
+      font-size: 1rem;
+    }
+
+    .transfer-card {
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--neon-orange);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .transfer-arrow {
+      color: var(--neon-orange);
+      font-weight: bold;
+    }
+
+    @media (max-width: 640px) {
+      header.top-header {
+        gap: 14px;
+        margin-top: 5px;
+        margin-bottom: 20px;
+      }
+
+      .brand-logo-img {
+        width: 55px;
+        height: 55px;
+      }
+
+      .brand-title {
+        font-size: 1.6rem;
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 641px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR FIJA CON HAMBURGUESA -->
+  <div class="top-bar">
+    <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="switchMode('hub')">
+      <img src="https://lh3.googleusercontent.com/d/1KiHr6xVBzMGebAZ-iG-4LdGbYg88WGdT" alt="Logo" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--neon-cyan);">
+      <span style="font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: 1px;">EL OCTÓGONO</span>
+    </div>
+    
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- MENÚ OVERLAY Y DESPLEGABLE SIDEBAR -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-item" onclick="switchMode('hub')">🏠 Inicio Hub</div>
+    <div class="side-menu-item" onclick="switchMode('preguntas')">🎯 Preguntas</div>
+    <div class="side-menu-item" onclick="switchMode('votaciones')">🗳️ Votaciones</div>
+    <div class="side-menu-item" onclick="switchMode('sexo')">🔥 Modo Sexo</div>
+    <div class="side-menu-item" onclick="switchMode('impostor')">🤫 El Impostor</div>
+    <div class="side-menu-item" onclick="switchMode('quesoy')">🤔 ¿Quién soy?</div>
+    <div class="side-menu-item" onclick="switchMode('torneo')">🎮 Torneo FIFA</div>
+    <div class="side-menu-item" onclick="switchMode('gastos')">💸 Cuentas Claras</div>
+  </div>
+
+  <!-- HEADER PRINCIPAL -->
+  <header class="top-header" onclick="switchMode('hub')">
+    <img src="https://lh3.googleusercontent.com/d/1KiHr6xVBzMGebAZ-iG-4LdGbYg88WGdT" alt="Logo El Octógono" class="brand-logo-img">
+    <div class="brand-title">El Octógono</div>
+  </header>
+
+  <div class="game-container">
+    
+    <!-- ==================== PANTALLA PRINCIPAL (HUB) ==================== -->
+    <div class="landing-hub" id="modeHub">
+      <div class="hub-title">Seleccioná una Experiencia</div>
+      
+      <div class="hub-grid">
+        
+        <!-- CARD PREGUNTAS -->
+        <div class="hub-card" style="--card-accent: var(--neon-cyan);" onclick="switchMode('preguntas')">
+          <div class="hub-card-icon">🎯</div>
+          <div class="hub-card-title">Preguntas</div>
+          <div class="hub-card-desc">Girá la ruleta e interactuá con preguntas profundas, retos épicos y secretos.</div>
+          <button class="hub-card-btn">JUGAR AHORA</button>
+        </div>
+
+        <!-- CARD VOTACIONES (NUEVO) -->
+        <div class="hub-card" style="--card-accent: var(--neon-red);" onclick="switchMode('votaciones')">
+          <div class="hub-card-icon">🗳️</div>
+          <div class="hub-card-title">Votaciones</div>
+          <div class="hub-card-desc">¿Quién es el más pollerudo o probable? Voten de manera anónima y descubran los resultados.</div>
+          <button class="hub-card-btn">INICIAR VOTACIÓN</button>
+        </div>
+
+        <!-- CARD MODO SEXO -->
+        <div class="hub-card" style="--card-accent: var(--neon-pink);" onclick="switchMode('sexo')">
+          <div class="hub-card-icon">🔥</div>
+          <div class="hub-card-title">Modo Sexo</div>
+          <div class="hub-card-desc">Desafíos picantes, fantasías e intimidad pura. Solo para valientes.</div>
+          <button class="hub-card-btn">INGRESAR 🔥</button>
+        </div>
+
+        <!-- CARD EL IMPOSTOR -->
+        <div class="hub-card" style="--card-accent: var(--neon-yellow);" onclick="switchMode('impostor')">
+          <div class="hub-card-icon">🤫</div>
+          <div class="hub-card-title">El Impostor</div>
+          <div class="hub-card-desc">Descubrí quién es el infiltrado en el grupo mediante preguntas astutas.</div>
+          <button class="hub-card-btn">INICIAR PARTIDA</button>
+        </div>
+
+        <!-- CARD ¿QUIÉN SOY? -->
+        <div class="hub-card" style="--card-accent: var(--neon-purple);" onclick="switchMode('quesoy')">
+          <div class="hub-card-icon">🤔</div>
+          <div class="hub-card-title">¿Quién soy?</div>
+          <div class="hub-card-desc">Asignación secreta de roles, países o edades en tarjetas interactivas.</div>
+          <button class="hub-card-btn">REPARTIR TARJETAS</button>
+        </div>
+
+        <!-- CARD TORNEO FIFA -->
+        <div class="hub-card" style="--card-accent: var(--neon-green);" onclick="switchMode('torneo')">
+          <div class="hub-card-icon">🎮</div>
+          <div class="hub-card-title">Torneo FIFA</div>
+          <div class="hub-card-desc">Organizá torneos relámpago con eliminatorias o fase de grupos.</div>
+          <button class="hub-card-btn">CREAR TORNEO</button>
+        </div>
+
+        <!-- CARD GASTOS -->
+        <div class="hub-card" style="--card-accent: var(--neon-orange);" onclick="switchMode('gastos')">
+          <div class="hub-card-icon">💸</div>
+          <div class="hub-card-title">Cuentas Claras</div>
+          <div class="hub-card-desc">Calculá quién le pasa a quién en la juntada de forma rápida y exacta.</div>
+          <button class="hub-card-btn">CALCULAR GASTOS</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== MODO PREGUNTAS ==================== -->
+    <div class="game-mode" id="modePreguntas" style="--current-neon: var(--neon-cyan);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title">Preguntas</div>
+      
+      <div class="wheel-section" id="wheelSectionPreguntas">
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+          <canvas class="wheel-canvas" id="canvasPreguntas" width="300" height="300"></canvas>
+        </div>
+        <button class="spin-btn" id="spinBtnPreguntas" onclick="spinWheel('preguntas')">GIRAR RULETA</button>
+      </div>
+
+      <div class="deck-section" id="deckSectionPreguntas">
+        <div class="category-title" id="categoryTitlePreguntas">Categoría</div>
+        <div class="card-container">
+          <div class="card" id="cardPreguntas">
+            <div class="card-face card-front">
+              <div class="card-category-tag" id="cardCategoryTagPreguntas">Categoría</div>
+              <div class="card-question" id="cardQuestionPreguntas">¿Cargando pregunta...?</div>
+              <div class="card-footer">
+                <span class="card-footer-brand">EL OCTÓGONO</span>
+                <span class="question-counter" id="counterPreguntas">0 / 50</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="action-btn" id="nextQuestionBtnPreguntas" onclick="drawQuestion('preguntas')">Siguiente Pregunta</button>
+          <button class="action-btn" onclick="resetToWheel('preguntas')">Girar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODO VOTACIONES (NUEVO) ==================== -->
+    <div class="game-mode" id="modeVotaciones" style="--current-neon: var(--neon-red);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-red);">Votaciones 🗳️</div>
+
+      <!-- PASO 1: Selección de Cantidad -->
+      <div class="setup-panel" id="votacionesStep1" style="border-color: var(--neon-red);">
+        <div class="setup-group">
+          <label for="votacionesPlayerCount" style="color: var(--neon-red);">Cantidad de Participantes (hasta 15):</label>
+          <select id="votacionesPlayerCount">
+            <option value="2">2 Jugadores</option>
+            <option value="3">3 Jugadores</option>
+            <option value="4" selected>4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+            <option value="7">7 Jugadores</option>
+            <option value="8">8 Jugadores</option>
+            <option value="9">9 Jugadores</option>
+            <option value="10">10 Jugadores</option>
+            <option value="11">11 Jugadores</option>
+            <option value="12">12 Jugadores</option>
+            <option value="13">13 Jugadores</option>
+            <option value="14">14 Jugadores</option>
+            <option value="15">15 Jugadores</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-red); color: #fff; box-shadow: 0 0 15px var(--neon-red);" onclick="goToVotacionesStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <!-- PASO 2: Nombres de los Participantes -->
+      <div class="setup-panel" id="votacionesStep2" style="display: none; border-color: var(--neon-red);">
+        <div style="font-family: Orbitron; color: var(--neon-red); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Jugadores</div>
+        <div class="players-inputs-container" id="votacionesPlayersInputs"></div>
+
+        <button class="primary-btn" style="background: var(--neon-red); color: #fff; box-shadow: 0 0 15px var(--neon-red);" onclick="startVotacionesGame()">INICIAR JUEGO 🚀</button>
+      </div>
+
+      <!-- PASO 3: Proceso de Votación Anónima -->
+      <div class="gameplay-panel" id="votacionesGameplay" style="display: none;">
+        <div class="setup-panel" style="border-color: var(--neon-red); margin-bottom: 15px; text-align: center;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-family: Orbitron;">TEMÁTICA ACTUAL</div>
+          <div id="votacionQuestionText" style="font-size: 1.2rem; font-weight: 700; color: #fff; margin-top: 5px;"></div>
+        </div>
+
+        <div class="player-card" style="border: 2px solid var(--neon-red);">
+          <div class="player-name" id="votacionCurrentVoterName" style="color: var(--neon-red);">Turno de Jugador</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Votación anónima. No dejes que otros miren.</div>
+
+          <div class="secret-box" id="votacionSecretBox">
+            <div id="votacionOptionsContainer" style="display: none; width: 100%; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
+            <div id="votacionCoverText" style="color: var(--text-muted); font-size: 0.85rem;">Presiona para emitir tu voto de forma secreta</div>
+          </div>
+
+          <button class="toggle-reveal-btn" id="votacionRevealBtn" style="background: var(--neon-red); color: #fff;" onclick="toggleVotacionOptions()">MOSTRAR OPCIONES</button>
+        </div>
+      </div>
+
+      <!-- PASO 4: Resultados de la Votación -->
+      <div class="setup-panel" id="votacionesResults" style="display: none; border-color: var(--neon-red);">
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: Orbitron; text-align: center;">RESULTADOS DE LA VOTACIÓN</div>
+        <div id="votacionesTopicResultTitle" style="font-size: 1.1rem; font-weight: 700; color: var(--neon-red); text-align: center; margin-bottom: 15px;"></div>
+
+        <div id="votacionesBarsContainer"></div>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+          <button class="primary-btn" style="background: var(--neon-red); color: #fff; flex: 1;" onclick="nextVotacionTopic()">SIGUIENTE TEMÁTICA ➔</button>
+          <button class="action-btn" style="border-color: var(--neon-red); flex: 1;" onclick="resetVotacionesGame()">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODO SEXO ==================== -->
+    <div class="game-mode" id="modeSexo" style="--current-neon: var(--neon-pink);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-pink);">Modo Sexo 🔥</div>
+      
+      <div class="wheel-section" id="wheelSectionSexo">
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+          <canvas class="wheel-canvas" id="canvasSexo" width="300" height="300"></canvas>
+        </div>
+        <button class="spin-btn" id="spinBtnSexo" style="background: var(--neon-pink); box-shadow: 0 0 15px var(--neon-pink);" onclick="spinWheel('sexo')">GIRAR RULETA</button>
+      </div>
+
+      <div class="deck-section" id="deckSectionSexo">
+        <div class="category-title" id="categoryTitleSexo">Categoría</div>
+        <div class="card-container">
+          <div class="card" id="cardSexo">
+            <div class="card-face card-front">
+              <div class="card-category-tag" id="cardCategoryTagSexo">Categoría</div>
+              <div class="card-question" id="cardQuestionSexo">¿Cargando pregunta...?</div>
+              <div class="card-footer">
+                <span class="card-footer-brand">EL OCTÓGONO · SEXO</span>
+                <span class="question-counter" id="counterSexo">0 / 50</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="action-btn" id="nextQuestionBtnSexo" onclick="drawQuestion('sexo')">Siguiente Pregunta</button>
+          <button class="action-btn" onclick="resetToWheel('sexo')">Girar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODO EL IMPOSTOR ==================== -->
+    <div class="game-mode" id="modeImpostor" style="--current-neon: var(--neon-yellow);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-yellow);">El Impostor 🤫</div>
+
+      <div class="setup-panel" id="impostorSetup" style="border-color: var(--neon-yellow); display: flex;">
+        <div class="setup-group">
+          <label for="playerCount" style="color: var(--neon-yellow);">Cantidad de Jugadores:</label>
+          <select id="playerCount" onchange="updateImpostorOptions()">
+            <option value="3">3 Jugadores</option>
+            <option value="4" selected>4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+            <option value="7">7 Jugadores</option>
+            <option value="8">8 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="impostorCount" style="color: var(--neon-yellow);">Cantidad de Impostores:</label>
+          <select id="impostorCount">
+            <option value="1" selected>1 Impostor</option>
+            <option value="2">2 Impostores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="impostorCategory" style="color: var(--neon-yellow);">Categoría:</label>
+          <select id="impostorCategory">
+            <option value="comida">🍔 Comida y Bebidas</option>
+            <option value="paises">✈️ Países y Ciudades</option>
+            <option value="peliculas">🎬 Películas y Series</option>
+            <option value="animales">🦁 Animales</option>
+            <option value="objetos">📱 Objetos y Tecnología</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow);" onclick="startImpostorGame()">INICIAR PARTIDA</button>
+      </div>
+
+      <div class="gameplay-panel" id="impostorGameplay" style="display: none;">
+        <div class="player-card" style="border: 2px solid var(--neon-yellow);">
+          <div class="player-name" id="impostorPlayerName" style="color: var(--neon-yellow);">Jugador 1</div>
+          
+          <div class="secret-box">
+            <div id="secretContent" style="display: none;"></div>
+          </div>
+
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
+            <button class="toggle-reveal-btn" id="toggleRevealBtn" style="background: var(--neon-yellow); color: #030712;" onclick="toggleRevealRole()">VER ROL</button>
+            <button class="action-btn" id="nextPlayerBtn" onclick="nextImpostorTurn()" style="display: none; border-color: var(--neon-yellow);">Siguiente ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-panel" id="impostorSummary" style="display: none; border-color: var(--neon-yellow); text-align: center;">
+        <h2 style="color: var(--neon-yellow); font-family: Orbitron; margin-bottom: 10px; font-size: 1.2rem;">¡Todos vieron su rol!</h2>
+        <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px; color: var(--text-muted);">
+          Realicen preguntas por turnos.<br><strong style="color: #fff;">¡Descubran al Impostor!</strong>
+        </p>
+        <button class="primary-btn" style="background: var(--neon-yellow);" onclick="resetImpostorSetup()">NUEVA PARTIDA</button>
+      </div>
+    </div>
+
+    <!-- ==================== MODO ¿QUIÉN SOY? ==================== -->
+    <div class="game-mode" id="modeQueSoy" style="--current-neon: var(--neon-purple);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-purple);">¿Quién soy? 🤔</div>
+
+      <div class="setup-panel" id="queSoyStep1" style="border-color: var(--neon-purple);">
+        <div class="setup-group">
+          <label for="queSoyPlayerCount" style="color: var(--neon-purple);">Cantidad de Jugadores:</label>
+          <select id="queSoyPlayerCount">
+            <option value="2">2 Jugadores</option>
+            <option value="3">3 Jugadores</option>
+            <option value="4" selected>4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+            <option value="7">7 Jugadores</option>
+            <option value="8">8 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="queSoyCategory" style="color: var(--neon-purple);">Categoría:</label>
+          <select id="queSoyCategory">
+            <option value="edades">🎂 Edades (1 a 100)</option>
+            <option value="paises">✈️ Países del Mundo</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="goToQueSoyStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <div class="setup-panel" id="queSoyStep2" style="display: none; border-color: var(--neon-purple);">
+        <div style="font-family: Orbitron; color: var(--neon-purple); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Jugadores</div>
+        <div class="players-inputs-container" id="playersInputsContainer"></div>
+
+        <button class="primary-btn" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple);" onclick="generateQueSoyCards()">REPARTIR TARJETAS 🚀</button>
+      </div>
+
+      <div class="gameplay-panel" id="queSoyBoard" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="cards-grid" id="cardsGrid"></div>
+        <button class="action-btn" style="margin-top: 20px; border-color: var(--neon-purple); width: min(85vw, 300px);" onclick="resetQueSoyGame()">Nueva Partida</button>
+      </div>
+    </div>
+
+    <!-- ==================== MODO TORNEO FIFA ==================== -->
+    <div class="game-mode" id="modeTorneo" style="--current-neon: var(--neon-green);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-green);">Torneo FIFA 🎮</div>
+
+      <div class="setup-panel" id="torneoStep1" style="border-color: var(--neon-green);">
+        <div class="setup-group">
+          <label for="torneoPlayerCount" style="color: var(--neon-green);">Cantidad de Jugadores:</label>
+          <select id="torneoPlayerCount">
+            <option value="4">4 Jugadores</option>
+            <option value="8" selected>8 Jugadores</option>
+            <option value="16">16 Jugadores</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="torneoType" style="color: var(--neon-green);">Tipo de Torneo:</label>
+          <select id="torneoType">
+            <option value="direct" selected>🏆 Eliminación Directa (Llaves)</option>
+            <option value="groups">⚽ Fase de Grupos + Eliminatoria</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-green); color: #030712; box-shadow: 0 0 15px var(--neon-green);" onclick="goToTorneoStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <div class="setup-panel" id="torneoStep2" style="display: none; border-color: var(--neon-green);">
+        <div style="font-family: Orbitron; color: var(--neon-green); font-size: 1rem; text-align: center; margin-bottom: 5px;">Ingresar Jugadores / Equipos</div>
+        <div class="players-inputs-container" id="torneoPlayersInputs"></div>
+
+        <button class="primary-btn" style="background: var(--neon-green); color: #030712; box-shadow: 0 0 15px var(--neon-green);" onclick="startTorneo()">CREAR TORNEO 🏆</button>
+      </div>
+
+      <div class="gameplay-panel" id="torneoBoard" style="display: none; width: 100%;">
+        <div class="tournament-board" id="tournamentBoardContent"></div>
+        <button class="action-btn" style="margin-top: 25px; border-color: var(--neon-green);" onclick="resetTorneo()">Reiniciar Torneo</button>
+      </div>
+    </div>
+
+    <!-- ==================== MODO GASTOS ==================== -->
+    <div class="game-mode" id="modeGastos" style="--current-neon: var(--neon-orange);">
+      <button class="back-to-hub-btn" onclick="switchMode('hub')">⬅ Volver al menú</button>
+      <div class="mode-title" style="color: var(--neon-orange);">Cuentas Claras 💸</div>
+
+      <!-- PASO 1: Selección de Participantes -->
+      <div class="setup-panel" id="gastosStep1" style="border-color: var(--neon-orange);">
+        <div class="setup-group">
+          <label for="gastosPlayerCount" style="color: var(--neon-orange);">Número de Participantes:</label>
+          <select id="gastosPlayerCount">
+            <option value="2">2 Personas</option>
+            <option value="3">3 Personas</option>
+            <option value="4" selected>4 Personas</option>
+            <option value="5">5 Personas</option>
+            <option value="6">6 Personas</option>
+            <option value="7">7 Personas</option>
+            <option value="8">8 Personas</option>
+            <option value="9">9 Personas</option>
+            <option value="10">10 Personas</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 15px var(--neon-orange);" onclick="goToGastosStep2()">CONTINUAR ➔</button>
+      </div>
+
+      <!-- PASO 2: Nombres de los Participantes -->
+      <div class="setup-panel" id="gastosStep2" style="display: none; border-color: var(--neon-orange);">
+        <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 1rem; text-align: center; margin-bottom: 5px;">Nombres de los Participantes</div>
+        <div class="players-inputs-container" id="gastosPlayersInputs"></div>
+
+        <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 15px var(--neon-orange);" onclick="startGastosManager()">INGRESAR GASTOS 💸</button>
+      </div>
+
+      <!-- PASO 3: Carga de Gastos y Cálculo -->
+      <div class="gameplay-panel" id="gastosBoard" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        
+        <!-- FORMULARIO PARA AGREGAR UN GASTO -->
+        <div class="setup-panel" style="border-color: var(--neon-orange); margin-bottom: 20px;">
+          <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 0.9rem; text-align: center; font-weight: 700;">REGISTRAR UN GASTO</div>
+          
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">Concepto (ej. Bebidas, Asado):</label>
+            <input type="text" id="expenseDescInput" placeholder="¿Qué se compró?">
+          </div>
+
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">Monto ($):</label>
+            <input type="number" id="expenseAmountInput" placeholder="0" min="0">
+          </div>
+
+          <div class="setup-group">
+            <label style="color: var(--neon-orange);">¿Quién / Quiénes pagaron?:</label>
+            <div class="checkbox-grid" id="payersCheckboxes"></div>
+          </div>
+
+          <button class="primary-btn" style="background: var(--neon-orange); color: #030712; box-shadow: 0 0 10px var(--neon-orange);" onclick="addExpense()">AGREGAR GASTO +</button>
+        </div>
+
+        <!-- LISTA DE GASTOS INGRESADOS -->
+        <div class="setup-panel" style="border-color: var(--neon-orange); margin-bottom: 20px;">
+          <div style="font-family: Orbitron; color: var(--neon-orange); font-size: 0.9rem; text-align: center; margin-bottom: 10px; font-weight: 700;">GASTOS REGISTRADOS</div>
+          <div class="expense-list" id="expenseListContainer">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">No hay gastos ingresados aún.</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-family: Orbitron; font-weight: 700; color: #fff; border-top: 1px solid rgba(255, 153, 0, 0.4); padding-top: 8px;">
+            <span>TOTAL JUNTADA:</span>
+            <span id="totalJuntadaAmount" style="color: var(--neon-orange);">$0</span>
+          </div>
+          <button class="primary-btn" style="background: var(--neon-green); color: #030712; margin-top: 15px; box-shadow: 0 0 15px var(--neon-green);" onclick="calculateBalances()">CALCULAR SALDOS ➔</button>
+        </div>
+
+        <!-- BALANCES Y TRANSFERENCIAS -->
+        <div class="setup-panel" id="gastosResultsPanel" style="display: none; border-color: var(--neon-green);">
+          <div style="font-family: Orbitron; color: var(--neon-green); font-size: 1.1rem; text-align: center; margin-bottom: 15px; font-weight: 900;">¿QUIÉN LE PASA A QUIÉN? 🤝</div>
+          
+          <div id="transfersContainer"></div>
+
+          <button class="action-btn" style="margin-top: 15px; border-color: var(--neon-orange);" onclick="resetGastosGame()">Reiniciar Todo</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // CONTROL DEL MENÚ HAMBURGUESA
+    function toggleMenu() {
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('sideMenu');
+      const overlay = document.getElementById('menuOverlay');
+      
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    // FUNCIÓN DE FORMATO MONETARIO
+    function formatMoney(amount) {
+      return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // BASE DE DATOS - MODO PREGUNTAS (50 PREGUNTAS POR CATEGORÍA)
+    const questionsPreguntas = {
+      profundas: [
+        "1. ¿Cuál es tu mayor miedo irracional y de dónde crees que viene?",
+        "2. Si pudieras cambiar una sola decisión de tu pasado, ¿cuál sería?",
+        "3. ¿Qué significa realmente el éxito para ti en esta etapa de tu vida?",
+        "4. ¿Cuál es la lección más dura que te ha enseñado la vida hasta hoy?",
+        "5. ¿Qué es algo que sientes que nunca le has podido contar a tus padres?",
+        "6. ¿Cuándo fue la última vez que lloraste de verdad y cuál fue la causa?",
+        "7. ¿Qué cualidad innegociable buscas en una amistad sincera?",
+        "8. ¿Qué pensamiento no te deja dormir tranquilo/a por las noches?",
+        "9. ¿Te consideras una persona feliz actualmente o estás buscando la felicidad?",
+        "10. ¿Cuál es el recuerdo más doloroso de tu infancia?",
+        "11. ¿Qué opinión personal mantienes aunque la mayoría esté en desacuerdo?",
+        "12. ¿Alguna vez has sentido envidia profunda de alguien cercano? ¿Por qué?",
+        "13. ¿Cuál consideras que es tu mayor defecto y cómo trabajas en él?",
+        "14. ¿Qué es lo que más te asusta de envejecer?",
+        "15. Si supieras que vas a morir mañana, ¿de qué te arrepentirías de no haber dicho?",
+        "16. ¿Qué crees que ocurre después de la muerte física?",
+        "17. ¿Alguna vez has perdonado una traición grave? ¿Volverías a hacerlo?",
+        "18. ¿Qué es lo más valiente que has hecho por alguien más?",
+        "19. ¿Sientes que estás viviendo la vida que quieres o la que otros esperan?",
+        "20. ¿Qué persona ha tenido el mayor impacto positivo en tu personalidad?",
+        "21. ¿Cuál es el mayor sacrificio que alguien ha hecho por ti?",
+        "22. ¿Cómo reaccionas ante el fracaso personal o profesional?",
+        "23. ¿Crees en el destino o en que construimos cada paso libremente?",
+        "24. ¿Qué parte de tu vida sientes que no está bajo tu control?",
+        "25. ¿Qué consejo le darías a tu versión de hace 10 años?",
+        "26. ¿Alguna vez has tenido una crisis de identidad o de propósito?",
+        "27. ¿Qué es lo más egoísta que has hecho sin culpa?",
+        "28. ¿Qué mentira te cuentas a ti mismo/a con frecuencia?",
+        "29. ¿Qué logro personal te hace sentir profundamente orgulloso/a?",
+        "30. ¿Qué persona del grupo crees que te comprende mejor?",
+        "31. ¿Cuál ha sido el momento más solitario de tu vida?",
+        "32. ¿Qué prejuicio o estereotipo tenías que tuviste que romper?",
+        "33. ¿Prefieres una verdad que te destruya o una mentira que te consuele?",
+        "34. ¿Qué es lo que más te cuesta trabajo expresar emocionalmente?",
+        "35. ¿Sientes que has encontrado tu vocación en este mundo?",
+        "36. ¿Qué te hace perder por completo la fe en la humanidad?",
+        "37. ¿Qué experiencia cambió drásticamente tu forma de ver el mundo?",
+        "38. ¿Qué estándar o expectativa social rechazas rotundamente?",
+        "39. ¿Cuál es la promesa más importante que te has hecho a ti mismo/a?",
+        "40. ¿Qué hábito desearías eliminar por completo de tu rutina?",
+        "41. ¿Alguna vez has sentido que no perteneces a ningún lugar?",
+        "42. ¿Qué talento desearías tener y por qué nunca lo desarrollaste?",
+        "43. ¿Qué responsabilidad de la adultez te abruma más?",
+        "44. ¿Qué valor consideras indispensable para convivir en paz?",
+        "45. ¿Qué persona del pasado extrañas aunque sepas que es mejor no verla?",
+        "46. ¿Qué te reconforta al instante cuando estás pasando por un mal momento?",
+        "47. ¿Qué es algo que consideras imperdonable en cualquier relación?",
+        "48. ¿Sientes que eres una persona fácil o difícil de amar?",
+        "49. ¿Qué huella o legado te gustaría dejar cuando ya no estés?",
+        "50. ¿Cómo definirías el amor verdadero en una sola frase?"
+      ],
+      reto: [
+        "1. Haz 15 flexiones de brazos o 20 abdominales ahora mismo.",
+        "2. Imita a alguien de los presentes hasta que el grupo adivine quién es.",
+        "3. Envia un emoji de corazón a la tercera persona en tus chats de WhatsApp.",
+        "4. Deja que la persona a tu derecha envíe un mensaje corto desde tu celular.",
+        "5. Habla con acento extranjero durante las próximas 3 rondas del juego.",
+        "6. Cantá el coro de tu canción favorita a todo volumen sin acompañamiento.",
+        "7. Mantén una postura de plancha abdominal durante 45 segundos.",
+        "8. Permite que el grupo revise únicamente el historial de tu buscador por 30 segundos.",
+        "9. Tómate una selfie haciendo una cara ridícula y ponla de estado por 5 minutos.",
+        "10. Haz un baile improvisado de 30 segundos en el centro de la sala.",
+        "11. Deja que el jugador de tu izquierda te peine como quiera durante 2 rondas.",
+        "12. Llama a un amigo y convéncelo de que ganaste la lotería durante 1 minuto.",
+        "13. Intenta tocar la punta de tus pies sin doblar las rodillas durante 30 segundos.",
+        "14. Habla en rima durante las siguientes 2 rondas de conversación.",
+        "15. Haz 10 sentadillas mientras sostienes un objeto pesado que te asignen.",
+        "16. Dile un cumplido exagerado a cada uno de los integrantes del grupo.",
+        "17. Muéstrale a todos la foto más antigua que tengas guardada en tu galería.",
+        "18. Pon tu teléfono en altavoz y llama a pedir una pizza inventando un sabor.",
+        "19. Intenta adivinar quién te toca la espalda con los ojos vendados o cerrados.",
+        "20. Actúa como si fueras un comentarista deportivo de todo lo que pase en 2 minutos.",
+        "21. Haz una caminata de modelo de alta costura cruzando toda la habitación.",
+        "22. Mantén contacto visual firme con alguien durante 1 minuto sin sonreír.",
+        "23. Come una cucharada de algún condimento picante o amargo disponible.",
+        "24. Deja que la persona a tu izquierda dibuje un garabato en tu brazo con marcador.",
+        "25. Confiesa una travesura o broma pesada que le hayas hecho a alguien presente.",
+        "26. Intenta hacer malabares con 3 objetos pequeños por al menos 10 segundos.",
+        "27. Haz la voz de un personaje animado famoso durante las siguientes 2 rondas.",
+        "28. Deja que el grupo elija un apodo para ti que debas usar el resto del juego.",
+        "29. Trata de adivinar el objeto secreto que pongan en tu mano a ciegas.",
+        "30. Haz 5 saltos mortales imaginarios narrados como si fueras olímpico.",
+        "31. Permite que te maquillen o dibujen un bigote falso con sombra.",
+        "32. Recita un poema dramático sobre un objeto aleatorio del cuarto.",
+        "33. Quédate congelado/a en la posición que estés durante todo 1 minuto entero.",
+        "34. Muéstrale al grupo tu último sticker usado en WhatsApp.",
+        "35. Haz sonidos de animales de la selva durante 20 segundos sin parar.",
+        "36. Di 5 trabalenguas rápidos sin equivocarte en ninguno.",
+        "37. Deja que otra persona envíe un sticker aleatorio a tu grupo familiar.",
+        "38. Camina hacia atrás cada vez que tengas que moverte por los próximos 5 minutos.",
+        "39. Deja que te hagan cosquillas por 10 segundos sin defenderte.",
+        "40. Haz una imitación perfecta de un profesor o jefe que detestes.",
+        "41. Trata de mantener un vaso con agua sobre tu cabeza parado durante 30 segundos.",
+        "42. Pídele prestada una prenda a alguien y úsala al revés por 3 rondas.",
+        "43. Simula una escena de telenovela dramática con el jugador a tu derecha.",
+        "44. Di en voz alta tus últimas 3 búsquedas en YouTube o Spotify.",
+        "45. Trata de hacer una pirueta o salto ninja con aterrizaje perfecto.",
+        "46. Abre la ventana y grita '¡Amo este juego!' a la calle.",
+        "47. Haz como si fueras estatua humana y no parpadees por 30 segundos.",
+        "48. Intercambia una prenda de ropa con el jugador a tu izquierda.",
+        "49. Deja que el grupo revise tus notas guardadas en el celular por 20 segundos.",
+        "50. Da 5 vueltas rápidas sobre ti mismo/a e intenta caminar en línea recta."
+      ],
+      picantes: [
+        "1. ¿Quién de los presentes te parece más atractivo/a físicamente y por qué?",
+        "2. ¿Cuál ha sido tu fantasía romántica o atrevida más recurrente?",
+        "3. ¿Qué es lo más aventurado que has aceptado hacer en una primera cita?",
+        "4. ¿Alguna vez has tenido un sueño erótico con alguien de esta sala?",
+        "5. ¿Cuál es la prenda de vestir que consideras más irresistible?",
+        "6. ¿Alguna vez te han descubierto en pleno momento íntimo? ¿Quién fue?",
+        "7. ¿Qué es lo primero que le miras físicamente a una persona que te gusta?",
+        "8. ¿Has besado a más de una persona en una misma noche de fiesta?",
+        "9. ¿Cuál es tu lugar prohibido o arriesgado favorito para besar a alguien?",
+        "10. ¿Alguna vez has enviado una foto o mensaje subido de tono por error?",
+        "11. ¿Qué aroma o perfume te despierta el deseo de inmediato?",
+        "12. ¿Harías un trío con personas del grupo si todos estuvieran de acuerdo?",
+        "13. ¿Cuál es el piropo o frase de coqueteo más audaz que te han dicho?",
+        "14. ¿Alguna vez has sentido atracción por la pareja de un amigo/a?",
+        "15. ¿Prefieres un beso apasionado e intenso o lento y delicado?",
+        "16. ¿Qué zona no convencional de tu cuerpo consideras extremadamente sensible?",
+        "17. ¿Alguna vez has coqueteado con alguien solo para conseguir algo gratis?",
+        "18. ¿Qué es lo más salvaje o inesperado que has hecho estando despechado/a?",
+        "19. ¿Has tenido una aventura secreta que nadie más en tu círculo conoce?",
+        "20. ¿Qué persona del grupo crees que besa mejor basándote en tu intuición?",
+        "21. ¿Has practicado coqueteo virtual con alguien estando en una relación?",
+        "22. ¿Qué ropa interior estás usando justo en este momento?",
+        "23. ¿Cuál ha sido el beso más inolvidable de toda tu vida?",
+        "24. ¿Te atreverías a ir a una playa nudista con alguien del grupo?",
+        "25. ¿Qué es lo más tonto que has hecho intentando seducir a alguien?",
+        "26. ¿Alguna vez te has enamorado a primera vista de un/a desconocido/a?",
+        "27. ¿Qué canción usas o usarías para crear un ambiente romántico e íntimo?",
+        "28. ¿Alguna vez has mentido sobre tu experiencia previa para impresionar?",
+        "29. ¿Prefieres tomar la iniciativa en el coqueteo o que te conquisten?",
+        "30. ¿Qué buscarías en un perfil si usaras aplicaciones de citas?",
+        "31. ¿Cuál es el rumor picante más absurdo que han inventado sobre ti?",
+        "32. ¿Has tenido un 'crush' o flechazo con algún profesor o figura de autoridad?",
+        "33. ¿Qué es lo más audaz que has hecho por amor o atracción pura?",
+        "34. ¿Alguna vez te has besado con alguien cuyo nombre no recordabas?",
+        "35. ¿Qué detalle de otra persona te quita las ganas de coquetear de inmediato?",
+        "36. ¿Prefieres abrazos acurrucados por horas o contacto físico directo?",
+        "37. ¿Qué calificarías como un 10/10 en una cita romántica nocturna?",
+        "38. ¿Alguna vez has tenido una cita a ciegas? ¿Cómo terminó?",
+        "39. ¿Te atraen las personas mayores, menores o strictly de tu edad?",
+        "40. ¿Qué cualidad te vuelve loco/a en medio de un coqueteo intenso?",
+        "41. ¿Alguna vez has usado disfraces o juegos de roles para divertirte?",
+        "42. ¿Qué harías si la persona que te gusta te guiñara el ojo ahora mismo?",
+        "43. ¿Has sentido química instantánea con alguien nada más cruzando miradas?",
+        "44. ¿Qué locura harías por una noche inolvidable con tu famoso/a favorito/a?",
+        "45. ¿Cuál es la excusa más mala que has usado para irte de una mala cita?",
+        "46. ¿Qué consideras más erótico: la voz, la mirada o el tacto suave?",
+        "47. ¿Alguna vez has besado a alguien por juego o por cumplir un reto picante?",
+        "48. ¿Qué pensamiento atrevido has tenido hoy antes de venir a este juego?",
+        "49. ¿Si tuvieras que pasar 24 horas a solas con alguien del grupo, a quién eliges?",
+        "50. ¿Te consideras una persona romántica tradicional o moderna y atrevida?"
+      ]
+    };
+
+    // BASE DE DATOS - MODO SEXO (50 PREGUNTAS POR CATEGORÍA)
+    const questionsSexo = {
+      suaves: [
+        "1. ¿Cuál es tu tipo de ropa interior favorita en la otra persona?",
+        "2. ¿Prefieres sexo mañanero o por la noche antes de dormir?",
+        "3. ¿Qué zona de tu cuerpo es más sensible a los besos suaves?",
+        "4. ¿Prefieres luces completamente encendidas, tenue o a oscuras?",
+        "5. ¿Qué importancia le das a la música de fondo durante el sexo?",
+        "6. ¿Te gusta hablar y recibir elogios durante el acto o prefieres silencio?",
+        "7. ¿Qué tipo de caricias te encienden más rápido durante el juego previo?",
+        "8. ¿Prefieres sexo lento y romántico o rápido y apasionado?",
+        "9. ¿Cuál es tu postura suave favorita para una sesión larga y relajada?",
+        "10. ¿Te agrada el uso de aceites de masaje o cremas con aromas?",
+        "11. ¿Qué parte del cuerpo de tu pareja te gusta besar más tiempo?",
+        "12. ¿Qué tan importante es el juego previo (foreplay) para tu placer?",
+        "13. ¿Te gusta que te muerdan los labios suavemente al besarte?",
+        "14. ¿Has probado o te gustaría probar el sexo tántrico o lento?",
+        "15. ¿Prefieres hacer el amor con ropa semipuesta o desnudez total?",
+        "16. ¿Qué accesorios sencillos (como vendas suaves) te llaman la atención?",
+        "17. ¿Te gusta mirarse a los ojos fijamente durante el orgasmo?",
+        "18. ¿Qué tan dulce o salvaje te gusta que sea el inicio de la intimidad?",
+        "19. ¿Te agrada bañarte en pareja antes o después de tener relaciones?",
+        "20. ¿Qué gesto afectivo post-sexo es tu favorito (abrazos, mimos, hablar)?",
+        "21. ¿Prefieres sexo en la cama tradicional o en el sillón de la sala?",
+        "22. ¿Te estimula ver a tu pareja cambiarse o desnudarse despacio?",
+        "23. ¿Qué parte de tu propio cuerpo te hace sentir más sexy en la intimidad?",
+        "24. ¿Te gusta que te susurren cosas al oído durante el encuentro?",
+        "25. ¿Has tenido sexo bajo la lluvia o en la ducha con agua tibia?",
+        "26. ¿Qué tan rápido suele despertar tu deseo sexual en una cita?",
+        "27. ¿Prefieres lencería fina elegante o prendas cómodas y ajustadas?",
+        "28. ¿Qué tipo de besos te resultan imposibles de resistir?",
+        "29. ¿Te gusta tomar la iniciativa o prefieres que te seduzcan despacio?",
+        "30. ¿Qué tan importante es para ti la conexión emocional para disfrutar?",
+        "31. ¿Te gusta el uso de sábanas de seda o texturas especiales?",
+        "32. ¿Has experimentado sexo en la naturaleza (playa, bosque, montaña)?",
+        "33. ¿Qué tan sensible eres al contacto en el cuello o detrás de las orejas?",
+        "34. ¿Te agrada el sexo oral mañanero como forma de despertar?",
+        "35. ¿Cuál es el lugar de tu casa que más te inspira romance e intimidad?",
+        "36. ¿Qué tipo de miradas te confirman que la otra persona te desea?",
+        "37. ¿Te gusta dar o recibir masajes en los pies antes de empezar?",
+        "38. ¿Prefieres encuentros planificados o totalmente espontáneos?",
+        "39. ¿Qué ropa o accesorio tuyo sientes que le vuelve loco/a a tu pareja?",
+        "40. ¿Te gusta jugar con la temperatura (hielo, gotas de cera tibia)?",
+        "41. ¿Qué es lo más cursi que disfrutas hacer en la cama?",
+        "42. ¿Te agrada que te tomen de las manos fuertemente al llegar al clímax?",
+        "43. ¿Prefieres mañanas de domingo de sexo y desayuno en la cama?",
+        "44. ¿Qué tan flexible eres para probar nuevas posiciones cómodas?",
+        "45. ¿Te gusta el juego con espejos donde se puedan ver reflejados?",
+        "46. ¿Qué zona erógena sientes que la gente suele olvidar explorar?",
+        "47. ¿Te agrada el sexo con ropa interior puesta a medio retirar?",
+        "48. ¿Qué tan clave es el sentido del olfato en tu atracción sexual?",
+        "49. ¿Prefieres sexo apasionado de reconciliación o sexo diario tranquilo?",
+        "50. ¿Qué calificarías como un juego previo perfecto de 30 minutos?"
+      ],
+      medias: [
+        "1. ¿Cuál es la postura sexual en la que sientes mayor control y placer?",
+        "2. ¿Has tenido sexo en un lugar donde corrías peligro de ser descubierto/a?",
+        "3. ¿Qué fetiche o juego erótico popular te genera una curiosidad real?",
+        "4. ¿Cuál es tu posición preferida para garantizar un orgasmo rápido?",
+        "5. ¿Has utilizado juguetes sexuales a solas o en pareja? ¿Cuáles?",
+        "6. ¿Qué opinas sobre grabar un video íntimo casero de consumo personal?",
+        "7. ¿Has experimentado con el 'Dirty Talk' (hablar sucio) en la cama?",
+        "8. ¿Cuál ha sido el maratón sexual más largo que has tenido en un día?",
+        "9. ¿Has tenido relaciones en un auto en un lugar público o despejado?",
+        "10. ¿Qué tan abierto/a estás al uso de esposas o ataduras suaves?",
+        "11. ¿Has probado el sexo oral en lugares arriesgados (piscinas, autos)?",
+        "12. ¿Qué opinas de disfrazarte para un juego de roles de seducción?",
+        "13. ¿Has tenido sexo con alguien que acababas de conocer esa misma noche?",
+        "14. ¿Cuál es el lugar más raro de tu casa donde has tenido relaciones?",
+        "15. ¿Has experimentado con antifaces o tapar los ojos para potenciar sentidos?",
+        "16. ¿Qué tan importante es el orgasmo mutuo simultáneo para ti?",
+        "17. ¿Has tenido sexo frente a un espejo gigante para mirarse todo el tiempo?",
+        "18. ¿Alguna vez has fingido un orgasmo para terminar un encuentro? ¿Por qué?",
+        "19. ¿Te gusta recibir azotes suaves (spanking) en los glúteos?",
+        "20. ¿Has probado lubricantes con efecto de calor, frío o cosquilleo?",
+        "21. ¿Qué opinas del sexo anal? ¿Lo has probado o te llama la atención?",
+        "22. ¿Has tenido una aventura en una fiesta o evento social en el baño?",
+        "23. ¿Cuál es la fantasía erótica media que aún no has cumplido?",
+        "24. ¿Te agrada que te jalen suavemente del cabello durante el acto?",
+        "25. ¿Has consumido literatura o cine erótico para encender la pasión?",
+        "26. ¿Alguna vez has tenido relaciones con la puerta abierta habiendo gente cerca?",
+        "27. ¿Qué tan cómodo/a te sientes pidiendo exactamente lo que quieres en la cama?",
+        "28. ¿Has practicado sexting intenso enviando fotos muy explícitas?",
+        "29. ¿Te gusta tener el rol dominante o sumiso durante el sexo?",
+        "30. ¿Has tenido sexo en el mar o en una piscina pública?",
+        "31. ¿Qué opinas del juego con comida (crema batida, chocolate, hielo)?",
+        "32. ¿Has tenido sexo en el lugar de trabajo o estudio fuera de horario?",
+        "33. ¿Qué es lo más atrevido que has sugerido a una pareja en la cama?",
+        "34. ¿Has mantenido relaciones con alguien solo por pura química física sin amor?",
+        "35. ¿Te gusta la dominación ligera (controlar los movimientos del otro)?",
+        "36. ¿Has tenido sexo en un balcón, terraza o ventana con vista?",
+        "37. ¿Cuál es la posición más difícil anatómicamente que has logrado?",
+        "38. ¿Qué tan seguido te gusta cambiar de postura en un mismo encuentro?",
+        "39. ¿Has tenido relaciones durante el período menstrual de la mujer?",
+        "40. ¿Qué opinas sobre el intercambio de roles de género en el acto?",
+        "41. ¿Has dormido en un hotel de alojamiento por hora (telo)? ¿Cómo fue?",
+        "42. ¿Qué es lo que más te desinhibe sexualmente (alcohol, confianza, ambiente)?",
+        "43. ¿Has probado o te gustaría probar el '69' como juego previo largo?",
+        "44. ¿Te gusta que te dejen marcas visibles (chupones, rasguños) o lo detestas?",
+        "45. ¿Has tenido sexo mientras alguien más dormía en la misma habitación?",
+        "46. ¿Qué juguete erótico recomendarías a cualquiera sin dudarlo?",
+        "47. ¿Has iniciado un encuentro íntimo en el cine o transporte público?",
+        "48. ¿Qué tan abierto/a eres a probar fetiches que entusiasman a tu pareja?",
+        "49. ¿Has tenido sexo en una carpa de camping o al aire libre?",
+        "50. ¿Qué calificarías como la noche de pasión más intensa de este año?"
+      ],
+      extremas: [
+        "1. Describe en detalle tu fantasía sexual más oscura, tabú o inconfesable.",
+        "2. ¿Cuál ha sido la experiencia sexual más salvaje y desenfrenada de tu vida?",
+        "3. ¿En qué lugar extremadamente público o peligroso has tenido relaciones?",
+        "4. ¿Qué persona de este grupo elegirías para cumplir una fantasía secreta?",
+        "5. ¿Has participado o te gustaría participar en un trío o trío con dos hombres/mujeres?",
+        "6. ¿Has asistido a un club swinger, fiesta privada o intercambio de parejas?",
+        "7. ¿Qué opinas sobre el BDSM moderado o intenso (bondage, disciplina, sado)?",
+        "8. ¿Has tenido sexo en un avión, tren en movimiento o barco en alta mar?",
+        "9. ¿Cuál es la práctica sexual más extrema que has probado y volverías a repetir?",
+        "10. ¿Has tenido un encuentro íntimo con más de 2 personas al mismo tiempo (orgía)?",
+        "11. ¿Te gustaría presenciar a tu pareja teniendo relaciones con otra persona (cuckold)?",
+        "12. ¿Has probado el sexo anal con juguetes avanzados o de gran tamaño?",
+        "13. ¿Qué fetiche extremo (asfixia erótica suave, golden shower, etc.) te curiosidad?",
+        "14. ¿Has grabado un video íntimo explícito donde tu rostro sea totalmente visible?",
+        "15. ¿Has tenido sexo en un lugar donde sabías 100% que te estaban viendo?",
+        "16. ¿Cuál ha sido tu mayor locura sexual estando bajo los efectos de la fiesta?",
+        "17. ¿Has practicado voyeurismo (mirar a otros) o exhibicionismo intencional?",
+        "18. ¿Te atrae la idea de ser sometido/a por completo mediante ataduras de cuerda (Shibari)?",
+        "19. ¿Has tenido una relación sexual puramente mercantil o por algún interés extremo?",
+        "20. ¿Qué secreto erótico cambiaría la forma en que tus amigos te ven si se supiera?",
+        "21. ¿Has tenido sexo con un desconocido/a sin protección (bareback) en el pasado?",
+        "22. ¿Te atreverías a tener un encuentro erótico en vivo transmitido por webcam?",
+        "23. ¿Has probado o te atrae la estimulación prostática / pegging en la pareja?",
+        "24. ¿Qué es lo más extremo que has hecho por celos o deseo de posesión íntima?",
+        "25. ¿Has tenido sexo en un baño de discoteca crowded con gente haciendo fila afuera?",
+        "26. ¿Qué límite absoluto jamás cruzarías bajo ninguna circunstancia en la cama?",
+        "27. ¿Has usado mordazas, arneses o prendas fetichistas de cuero/látex completas?",
+        "28. ¿Te gustaría probar un juego de rol de desconocidos que se encuentran en un hotel?",
+        "29. ¿Has tenido una fantasía intensa con un familiar político o amigo muy cercano de tu pareja?",
+        "30. ¿Cuál es el lugar público más arriesgado (ascensor transparente, parque) que usaste?",
+        "31. ¿Has probado el sexo maratónico extremo usando sustancias o estimulantes?",
+        "32. ¿Te gustaría explorar el intercambio temporario de pareja entre amigos de confianza?",
+        "33. ¿Has tenido una sesión sexual tan salvaje que causó lesiones leves o moretones?",
+        "34. ¿Qué opina tu mente sobre la infidelidad puramente física sin sentimientos?",
+        "35. ¿Has probado la cera caliente o disciplinas de dolor/placer en la piel?",
+        "36. ¿Te atreverías a disfrazarte y asistir a una fiesta temática erótica secreta?",
+        "37. ¿Cuál es el objeto cotidiano más peligroso o extraño que has usado en la intimidad?",
+        "38. ¿Has tenido relaciones sexuales en el lugar de trabajo de tu jefe/a o en su escritorio?",
+        "39. ¿Qué fantasía de dominación extrema te gustaría ejecutar si no hubiera juzgamiento?",
+        "40. ¿Has tenido un encuentro íntimo con alguien del mismo sexo por pura experimentación?",
+        "41. ¿Te atrae la idea del sexo en lugares con ventanas panorámicas en pisos muy altos?",
+        "42. ¿Has tenido relaciones con alguien mientras otra persona dormía en la misma cama?",
+        "43. ¿Qué es lo más humillante pero excitante que te han pedido o has pedido en la cama?",
+        "44. ¿Has usado aplicaciones de encuentros explícitos de geolocalización inmediata?",
+        "45. ¿Cuál es tu opinión sobre el policontrol sexual y las relaciones abiertas puras?",
+        "46. ¿Has tenido sexo en un probador de ropa de un centro comercial concurrido?",
+        "47. ¿Qué tan lejos llegarías para complacer el fetiche más raro de tu pareja?",
+        "48. ¿Has sentido excitación al estar a punto de ser descubierto/a por la policía o seguridad?",
+        "49. ¿Te gustaría tener un encuentro a ciegas donde no conozcas la cara de la otra persona?",
+        "50. Confiesa el pensamiento sexual más pecaminoso que se te haya cruzado este mes."
+      ]
+    };
+
+    // BASE DE DATOS - MODO VOTACIONES (TEMÁTICAS "QUIÉN ES MÁS...")
+    const votacionesTopics = [
+      "¿Quién es el más pollerudo del grupo?",
+      "¿Quién es más probable que termine preso por una tontería?",
+      "¿Quién es el más chamuyero o chamuyera?",
+      "¿Quién es más probable que se vuelva millonario/a?",
+      "¿Quién es el más dramático cuando se enferma?",
+      "¿Quién es más probable que se olvide el cumpleaños de su pareja?",
+      "¿Quién es el más tacaño/a en las juntadas?",
+      "¿Quién es más probable que se quede dormido/a en una fiesta?",
+      "¿Quién es el más propenso/a a caer en una estafa telefónica?",
+      "¿Quién es el más tóxico o tóxica en una relación?",
+      "¿Quién es más probable que sobreviva a un apocalipsis zombi?",
+      "¿Quién es el más mala onda cuando tiene hambre?",
+      "¿Quién es el más llorón o llorona viendo películas?",
+      "¿Quién es más probable que pierda el celular o las llaves hoy?",
+      "¿Quién es el más desordenado con su vida?",
+      "¿Quién es el más propenso/a a tener una cita a ciegas disastrous?",
+      "¿Quién es el más propenso a gastarse todo el sueldo el primer día?"
+    ];
+
+    const impostorWords = {
+      comida: ["Pizza", "Hamburguesa", "Sushi", "Tacos", "Asado", "Empanadas", "Helado", "Milanesa"],
+      paises: ["Argentina", "Brasil", "Japón", "Francia", "Italia", "España", "Egipto", "México"],
+      peliculas: ["Titanic", "Avatar", "Harry Potter", "Star Wars", "El Padrino", "Avengers", "Matrix"],
+      animales: ["León", "Elefante", "Perro", "Gato", "Delfín", "Tiburón", "Jirafa"],
+      objetos: ["Celular", "Computadora", "Televisor", "Auriculares", "Reloj", "Bicicleta"]
+    };
+
+    const paisesQueSoy = [
+      "Argentina", "Brasil", "Chile", "Uruguay", "Colombia", "Perú", "México", "España", 
+      "Francia", "Italia", "Alemania", "Japón", "China", "Egipto", "Canadá", "EE.UU."
+    ];
+
+    const categoriesPreguntas = [
+      { name: 'Profundas', color: '#00f3ff', textColor: '#030712', key: 'profundas' },
+      { name: 'Reto', color: '#ffe600', textColor: '#030712', key: 'reto' },
+      { name: 'Picantes', color: '#ff0055', textColor: '#ffffff', key: 'picantes' }
+    ];
+
+    const categoriesSexo = [
+      { name: 'Suaves', color: '#00ff66', textColor: '#030712', key: 'suaves' },
+      { name: 'Medias', color: '#b026ff', textColor: '#ffffff', key: 'medias' },
+      { name: 'Extremas', color: '#ff0055', textColor: '#ffffff', key: 'extremas' }
+    ];
+
+    let currentMode = 'hub';
+    
+    // ESTADO GENERAL CON SEGUIMIENTO DE PREGUNTAS CONSUMIDAS SIN REPETIR
+    let state = {
+      preguntas: { 
+        angle: 0, 
+        spinning: false, 
+        key: '',
+        used: { profundas: [], reto: [], picantes: [] }
+      },
+      sexo: { 
+        angle: 0, 
+        spinning: false, 
+        key: '',
+        used: { suaves: [], medias: [], extremas: [] }
+      }
+    };
+
+    function drawWheel(mode) {
+      const isPreguntas = mode === 'preguntas';
+      const canvas = document.getElementById(isPreguntas ? 'canvasPreguntas' : 'canvasSexo');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cats = isPreguntas ? categoriesPreguntas : categoriesSexo;
+
+      const numSlices = cats.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSlices; i++) {
+        const angle = i * sliceAngle;
+        
+        ctx.beginPath();
+        ctx.fillStyle = cats[i].color;
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, 150, angle, angle + sliceAngle);
+        ctx.lineTo(150, 150);
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#030712';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(angle + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = cats[i].textColor;
+        ctx.font = "bold 15px Orbitron";
+        ctx.fillText(cats[i].name, 130, 5);
+        ctx.restore();
+      }
+    }
+
+    drawWheel('preguntas');
+    drawWheel('sexo');
+
+    function switchMode(mode) {
+      currentMode = mode;
+      
+      const sideMenu = document.getElementById('sideMenu');
+      if (sideMenu.classList.contains('open')) {
+        toggleMenu();
+      }
+
+      document.getElementById('modeHub').style.display = 'none';
+      document.querySelectorAll('.game-mode').forEach(m => m.classList.remove('active'));
+
+      if(mode === 'hub') {
+        document.getElementById('modeHub').style.display = 'flex';
+      } else if(mode === 'preguntas') {
+        document.getElementById('modePreguntas').classList.add('active');
+      } else if(mode === 'votaciones') {
+        document.getElementById('modeVotaciones').classList.add('active');
+      } else if(mode === 'sexo') {
+        document.getElementById('modeSexo').classList.add('active');
+      } else if(mode === 'impostor') {
+        document.getElementById('modeImpostor').classList.add('active');
+      } else if(mode === 'quesoy') {
+        document.getElementById('modeQueSoy').classList.add('active');
+      } else if(mode === 'torneo') {
+        document.getElementById('modeTorneo').classList.add('active');
+      } else if(mode === 'gastos') {
+        document.getElementById('modeGastos').classList.add('active');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function spinWheel(mode) {
+      const st = state[mode];
+      if (st.spinning) return;
+
+      st.spinning = true;
+      const isPreguntas = mode === 'preguntas';
+      const btn = document.getElementById(isPreguntas ? 'spinBtnPreguntas' : 'spinBtnSexo');
+      const canvas = document.getElementById(isPreguntas ? 'canvasPreguntas' : 'canvasSexo');
+      const cats = isPreguntas ? categoriesPreguntas : categoriesSexo;
+
+      btn.disabled = true;
+
+      const extraDegrees = Math.floor(Math.random() * 360);
+      const totalRotation = (5 * 360) + extraDegrees;
+
+      st.angle += totalRotation;
+      canvas.style.transform = `rotate(${st.angle}deg)`;
+
+      setTimeout(() => {
+        st.spinning = false;
+        const actualDeg = st.angle % 360;
+        const effectiveDeg = (360 - (actualDeg % 360) + 270) % 360;
+        const sliceAngleDeg = 360 / cats.length;
+        const selectedIndex = Math.floor(effectiveDeg / sliceAngleDeg);
+        
+        const selectedCat = cats[selectedIndex];
+        st.key = selectedCat.key;
+
+        openDeck(mode, selectedCat);
+      }, 4000);
+    }
+
+    function openDeck(mode, category) {
+      const isPreguntas = mode === 'preguntas';
+      document.getElementById(isPreguntas ? 'wheelSectionPreguntas' : 'wheelSectionSexo').style.display = 'none';
+      document.getElementById(isPreguntas ? 'deckSectionPreguntas' : 'deckSectionSexo').style.display = 'flex';
+
+      document.getElementById(isPreguntas ? 'modePreguntas' : 'modeSexo').style.setProperty('--current-neon', category.color);
+
+      document.getElementById(isPreguntas ? 'categoryTitlePreguntas' : 'categoryTitleSexo').innerText = category.name;
+      document.getElementById(isPreguntas ? 'cardCategoryTagPreguntas' : 'cardCategoryTagSexo').innerText = category.name;
+
+      drawQuestion(mode);
+    }
+
+    // EXTRAE PREGUNTAS SIN REPETIR Y ACTUALIZA EL INDICADOR
+    function drawQuestion(mode) {
+      const isPreguntas = mode === 'preguntas';
+      const questionsBank = isPreguntas ? questionsPreguntas : questionsSexo;
+      const key = state[mode].key;
+      const totalAvailable = questionsBank[key].length; // Debería ser 50 siempre
+      const usedArray = state[mode].used[key];
+
+      // Verificación si se consumieron las 50 preguntas
+      if (usedArray.length >= totalAvailable) {
+        alert(`¡Felicidades! Se han completado todas las ${totalAvailable} preguntas de esta categoría. El mazo se reiniciará automáticamente.`);
+        state[mode].used[key] = [];
+      }
+
+      // Filtrar preguntas no usadas
+      let availableIndices = [];
+      for (let i = 0; i < totalAvailable; i++) {
+        if (!state[mode].used[key].includes(i)) {
+          availableIndices.push(i);
+        }
+      }
+
+      // Selección aleatoria sobre no usadas
+      const randPointer = Math.floor(Math.random() * availableIndices.length);
+      const chosenIndex = availableIndices[randPointer];
+
+      // Registrar como consumida
+      state[mode].used[key].push(chosenIndex);
+
+      // Desplegar en pantalla
+      const questionText = questionsBank[key][chosenIndex];
+      const counterElem = document.getElementById(isPreguntas ? 'counterPreguntas' : 'counterSexo');
+      const questionElem = document.getElementById(isPreguntas ? 'cardQuestionPreguntas' : 'cardQuestionSexo');
+
+      questionElem.innerText = questionText;
+      counterElem.innerText = `${state[mode].used[key].length} / ${totalAvailable}`;
+    }
+
+    function resetToWheel(mode) {
+      const isPreguntas = mode === 'preguntas';
+      document.getElementById(isPreguntas ? 'deckSectionPreguntas' : 'deckSectionSexo').style.display = 'none';
+      document.getElementById(isPreguntas ? 'wheelSectionPreguntas' : 'wheelSectionSexo').style.display = 'flex';
+      document.getElementById(isPreguntas ? 'spinBtnPreguntas' : 'spinBtnSexo').disabled = false;
+    }
+
+    // MODO VOTACIONES LOGIC
+    let votacionesState = {
+      players: [],
+      currentVoterIndex: 0,
+      topicIndex: 0,
+      votes: {}, // { playerName: count }
+      usedTopics: [],
+      isOptionsRevealed: false
+    };
+
+    function goToVotacionesStep2() {
+      const count = parseInt(document.getElementById('votacionesPlayerCount').value);
+      const container = document.getElementById('votacionesPlayersInputs');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-red);">Jugador ${i}</label>
+          <input type="text" id="votacionPlayerInput_${i}" placeholder="Nombre jugador ${i}" value="Jugador ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('votacionesStep1').style.display = 'none';
+      document.getElementById('votacionesStep2').style.display = 'flex';
+    }
+
+    function startVotacionesGame() {
+      const count = parseInt(document.getElementById('votacionesPlayerCount').value);
+      votacionesState.players = [];
+
+      for(let i = 1; i <= count; i++) {
+        const inputName = document.getElementById(`votacionPlayerInput_${i}`).value.trim();
+        votacionesState.players.push(inputName !== '' ? inputName : `Jugador ${i}`);
+      }
+
+      votacionesState.usedTopics = [];
+      document.getElementById('votacionesStep2').style.display = 'none';
+      
+      startNewVotacionTopic();
+    }
+
+    function startNewVotacionTopic() {
+      if (votacionesState.usedTopics.length >= votacionesTopics.length) {
+        votacionesState.usedTopics = [];
+      }
+
+      let available = [];
+      for (let i = 0; i < votacionesTopics.length; i++) {
+        if (!votacionesState.usedTopics.includes(i)) available.push(i);
+      }
+
+      const randIndex = available[Math.floor(Math.random() * available.length)];
+      votacionesState.usedTopics.push(randIndex);
+      votacionesState.topicIndex = randIndex;
+
+      // Reset de votación para la temática
+      votacionesState.currentVoterIndex = 0;
+      votacionesState.votes = {};
+      votacionesState.players.forEach(p => votacionesState.votes[p] = 0);
+
+      document.getElementById('votacionesResults').style.display = 'none';
+      document.getElementById('votacionesGameplay').style.display = 'flex';
+
+      document.getElementById('votacionQuestionText').innerText = votacionesTopics[randIndex];
+      
+      renderCurrentVoterTurn();
+    }
+
+    function renderCurrentVoterTurn() {
+      votacionesState.isOptionsRevealed = false;
+      const voterName = votacionesState.players[votacionesState.currentVoterIndex];
+      
+      document.getElementById('votacionCurrentVoterName').innerText = voterName;
+      document.getElementById('votacionCoverText').style.display = 'block';
+      
+      const optionsContainer = document.getElementById('votacionOptionsContainer');
+      optionsContainer.style.display = 'none';
+      optionsContainer.innerHTML = '';
+
+      votacionesState.players.forEach(targetPlayer => {
+        const btn = document.createElement('button');
+        btn.className = 'vote-option-btn';
+        btn.innerText = targetPlayer;
+        btn.onclick = () => submitVote(targetPlayer);
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('votacionRevealBtn').innerText = 'MOSTRAR OPCIONES';
+    }
+
+    function toggleVotacionOptions() {
+      votacionesState.isOptionsRevealed = !votacionesState.isOptionsRevealed;
+      const optionsContainer = document.getElementById('votacionOptionsContainer');
+      const coverText = document.getElementById('votacionCoverText');
+      const btn = document.getElementById('votacionRevealBtn');
+
+      if (votacionesState.isOptionsRevealed) {
+        optionsContainer.style.display = 'flex';
+        coverText.style.display = 'none';
+        btn.innerText = 'OCULTAR OPCIONES';
+      } else {
+        optionsContainer.style.display = 'none';
+        coverText.style.display = 'block';
+        btn.innerText = 'MOSTRAR OPCIONES';
+      }
+    }
+
+    function submitVote(selectedTarget) {
+      votacionesState.votes[selectedTarget] = (votacionesState.votes[selectedTarget] || 0) + 1;
+      votacionesState.currentVoterIndex++;
+
+      if (votacionesState.currentVoterIndex < votacionesState.players.length) {
+        renderCurrentVoterTurn();
+      } else {
+        showVotacionesResults();
+      }
+    }
+
+    function showVotacionesResults() {
+      document.getElementById('votacionesGameplay').style.display = 'none';
+      document.getElementById('votacionesResults').style.display = 'flex';
+
+      document.getElementById('votacionesTopicResultTitle').innerText = votacionesTopics[votacionesState.topicIndex];
+
+      const totalVotes = votacionesState.players.length;
+      const sortedResults = Object.keys(votacionesState.votes)
+        .map(player => ({ player, votes: votacionesState.votes[player] }))
+        .sort((a, b) => b.votes - a.votes);
+
+      const container = document.getElementById('votacionesBarsContainer');
+      container.innerHTML = '';
+
+      sortedResults.forEach((res, index) => {
+        const percentage = Math.round((res.votes / totalVotes) * 100);
+        const barItem = document.createElement('div');
+        barItem.className = 'result-bar-container';
+        if (index === 0 && res.votes > 0) {
+          barItem.style.borderColor = 'var(--neon-yellow)';
+        }
+
+        barItem.innerHTML = `
+          <div class="result-bar-info">
+            <span style="${index === 0 && res.votes > 0 ? 'color: var(--neon-yellow); font-weight:900;' : 'color:#fff;'}">
+              ${index === 0 && res.votes > 0 ? '👑 ' : ''}${res.player}
+            </span>
+            <span style="color: var(--neon-red); font-weight:700;">${res.votes} voto(s) (${percentage}%)</span>
+          </div>
+          <div class="result-bar-fill-bg">
+            <div class="result-bar-fill" style="width: ${percentage}%; ${index === 0 && res.votes > 0 ? 'background: var(--neon-yellow); box-shadow: 0 0 10px var(--neon-yellow);' : ''}"></div>
+          </div>
+        `;
+        container.appendChild(barItem);
+      });
+    }
+
+    function nextVotacionTopic() {
+      startNewVotacionTopic();
+    }
+
+    function resetVotacionesGame() {
+      document.getElementById('votacionesResults').style.display = 'none';
+      document.getElementById('votacionesGameplay').style.display = 'none';
+      document.getElementById('votacionesStep2').style.display = 'none';
+      document.getElementById('votacionesStep1').style.display = 'flex';
+    }
+
+    // IMPOSTOR LOGIC
+    let impostorState = { totalPlayers: 4, totalImpostors: 1, currentPlayerIndex: 0, impostorIndices: [], secretWord: '', isRevealed: false };
+
+    function updateImpostorOptions() {
+      const players = parseInt(document.getElementById('playerCount').value);
+      const impostorSelect = document.getElementById('impostorCount');
+      impostorSelect.innerHTML = '<option value="1" selected>1 Impostor</option>';
+      if (players >= 6) {
+        impostorSelect.innerHTML += '<option value="2">2 Impostores</option>';
+      }
+    }
+
+    function startImpostorGame() {
+      impostorState.totalPlayers = parseInt(document.getElementById('playerCount').value);
+      impostorState.totalImpostors = parseInt(document.getElementById('impostorCount').value);
+      impostorState.currentPlayerIndex = 0;
+      impostorState.impostorIndices = [];
+
+      while (impostorState.impostorIndices.length < impostorState.totalImpostors) {
+        const randIndex = Math.floor(Math.random() * impostorState.totalPlayers);
+        if (!impostorState.impostorIndices.includes(randIndex)) impostorState.impostorIndices.push(randIndex);
+      }
+
+      const catList = impostorWords[document.getElementById('impostorCategory').value];
+      impostorState.secretWord = catList[Math.floor(Math.random() * catList.length)];
+
+      document.getElementById('impostorSetup').style.display = 'none';
+      document.getElementById('impostorSummary').style.display = 'none';
+      document.getElementById('impostorGameplay').style.display = 'flex';
+
+      updateImpostorCardView();
+    }
+
+    function updateImpostorCardView() {
+      impostorState.isRevealed = false;
+      document.getElementById('impostorPlayerName').innerText = `Jugador ${impostorState.currentPlayerIndex + 1}`;
+      document.getElementById('secretContent').style.display = 'none';
+      document.getElementById('toggleRevealBtn').innerText = 'VER ROL';
+      document.getElementById('nextPlayerBtn').style.display = 'none';
+    }
+
+    function toggleRevealRole() {
+      impostorState.isRevealed = !impostorState.isRevealed;
+      const content = document.getElementById('secretContent');
+      const btn = document.getElementById('toggleRevealBtn');
+      const nextBtn = document.getElementById('nextPlayerBtn');
+
+      if (impostorState.isRevealed) {
+        content.style.display = 'block';
+        btn.innerText = 'OCULTAR';
+        nextBtn.style.display = 'block';
+
+        const isImpostor = impostorState.impostorIndices.includes(impostorState.currentPlayerIndex);
+        if (isImpostor) {
+          content.innerHTML = `<div style="color:var(--neon-pink); font-family:Orbitron; font-size:1.1rem; font-weight:900;">🤫 ERES EL IMPOSTOR</div>`;
+        } else {
+          content.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted);">PALABRA SECRETA:</div><div style="font-family:Orbitron; font-size:1.3rem; color:var(--neon-yellow); font-weight:900;">${impostorState.secretWord}</div>`;
+        }
+      } else {
+        content.style.display = 'none';
+        btn.innerText = 'VER ROL';
+      }
+    }
+
+    function nextImpostorTurn() {
+      impostorState.currentPlayerIndex++;
+      if (impostorState.currentPlayerIndex < impostorState.totalPlayers) {
+        updateImpostorCardView();
+      } else {
+        document.getElementById('impostorGameplay').style.display = 'none';
+        document.getElementById('impostorSummary').style.display = 'flex';
+      }
+    }
+
+    function resetImpostorSetup() {
+      document.getElementById('impostorSummary').style.display = 'none';
+      document.getElementById('impostorGameplay').style.display = 'none';
+      document.getElementById('impostorSetup').style.display = 'flex';
+    }
+
+    // MODO ¿QUIÉN SOY?
+    let queSoyData = { category: 'edades', players: [] };
+
+    function goToQueSoyStep2() {
+      const count = parseInt(document.getElementById('queSoyPlayerCount').value);
+      queSoyData.category = document.getElementById('queSoyCategory').value;
+      
+      const container = document.getElementById('playersInputsContainer');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-purple);">Jugador ${i}</label>
+          <input type="text" id="queSoyPlayerInput_${i}" placeholder="Nombre jugador ${i}" value="Jugador ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('queSoyStep1').style.display = 'none';
+      document.getElementById('queSoyStep2').style.display = 'flex';
+    }
+
+    function generateQueSoyCards() {
+      const count = parseInt(document.getElementById('queSoyPlayerCount').value);
+      queSoyData.players = [];
+
+      let assignedValues = [];
+      if (queSoyData.category === 'edades') {
+        let pool = Array.from({length: 99}, (_, i) => i + 1);
+        for(let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * pool.length);
+          assignedValues.push(`${pool[idx]} años`);
+          pool.splice(idx, 1);
+        }
+      } else {
+        let pool = [...paisesQueSoy];
+        for(let i = 0; i < count; i++) {
+          const idx = Math.floor(Math.random() * pool.length);
+          assignedValues.push(pool[idx]);
+          pool.splice(idx, 1);
+        }
+      }
+
+      for(let i = 1; i <= count; i++) {
+        const inputName = document.getElementById(`queSoyPlayerInput_${i}`).value.trim();
+        const playerName = inputName !== '' ? inputName : `Jugador ${i}`;
+        queSoyData.players.push({
+          name: playerName,
+          value: assignedValues[i - 1]
+        });
+      }
+
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
+
+      queSoyData.players.forEach((p, idx) => {
+        const cardElem = document.createElement('div');
+        cardElem.className = 'grid-card-container';
+        cardElem.onclick = () => flipGridCard(idx);
+
+        cardElem.innerHTML = `
+          <div class="grid-card" id="gridCard_${idx}">
+            <div class="grid-card-face grid-card-back">
+              <div class="grid-player-title">${p.name}</div>
+              <div class="grid-click-hint">Toca para dar vuelta</div>
+            </div>
+            <div class="grid-card-face grid-card-front">
+              <div style="font-size:0.75rem; color:var(--text-muted); font-family:Orbitron;">${p.name} ES:</div>
+              <div class="grid-result-value">${p.value}</div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(cardElem);
+      });
+
+      document.getElementById('queSoyStep2').style.display = 'none';
+      document.getElementById('queSoyBoard').style.display = 'flex';
+    }
+
+    function flipGridCard(index) {
+      const card = document.getElementById(`gridCard_${index}`);
+      card.classList.toggle('flipped');
+    }
+
+    function resetQueSoyGame() {
+      document.getElementById('queSoyBoard').style.display = 'none';
+      document.getElementById('queSoyStep1').style.display = 'flex';
+    }
+
+    // MODO TORNEO FIFA LOGIC
+    let torneoState = {
+      playersCount: 8,
+      type: 'direct',
+      players: [],
+      groups: [],
+      tree: {}
+    };
+
+    function goToTorneoStep2() {
+      const count = parseInt(document.getElementById('torneoPlayerCount').value);
+      torneoState.playersCount = count;
+      torneoState.type = document.getElementById('torneoType').value;
+
+      const container = document.getElementById('torneoPlayersInputs');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-green);">Jugador / Equipo ${i}</label>
+          <input type="text" id="torneoPlayerInput_${i}" placeholder="Nombre ${i}" value="Jugador ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('torneoStep1').style.display = 'none';
+      document.getElementById('torneoStep2').style.display = 'flex';
+    }
+
+    function startTorneo() {
+      const count = torneoState.playersCount;
+      torneoState.players = [];
+
+      for(let i = 1; i <= count; i++) {
+        const name = document.getElementById(`torneoPlayerInput_${i}`).value.trim() || `Jugador ${i}`;
+        torneoState.players.push(name);
+      }
+
+      const shuffled = [...torneoState.players].sort(() => Math.random() - 0.5);
+
+      if (torneoState.type === 'groups') {
+        setupGroupsMode(count, shuffled);
+      } else {
+        setupDirectKnockoutMode(count, shuffled);
+      }
+
+      document.getElementById('torneoStep2').style.display = 'none';
+      document.getElementById('torneoBoard').style.display = 'flex';
+      renderTorneoBoard();
+    }
+
+    function setupGroupsMode(count, shuffled) {
+      const groupLetters = ['A', 'B', 'C', 'D'];
+      const numGroups = count / 4;
+      torneoState.groups = [];
+
+      for (let g = 0; g < numGroups; g++) {
+        const groupTeams = shuffled.slice(g * 4, (g + 1) * 4).map(name => ({
+          name, pts: 0, gf: 0, gc: 0, dg: 0
+        }));
+        
+        const matches = [];
+        for (let i = 0; i < groupTeams.length; i++) {
+          for (let j = i + 1; j < groupTeams.length; j++) {
+            matches.push({ t1: groupTeams[i].name, t2: groupTeams[j].name, s1: '', s2: '' });
+          }
+        }
+
+        torneoState.groups.push({
+          name: `Grupo ${groupLetters[g]}`,
+          teams: groupTeams,
+          matches: matches
+        });
+      }
+
+      if (count === 4) {
+        torneoState.tree = {
+          semi: [
+            { t1: "1° Grupo A", t2: "2° Grupo A", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semifinal", t2: "3° Grupo A", winner: null }
+          ]
+        };
+      } else if (count === 8) {
+        torneoState.tree = {
+          semi: [
+            { t1: "1° Grupo A", t2: "2° Grupo B", winner: null },
+            { t1: "1° Grupo B", t2: "2° Grupo A", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semi 1", t2: "Ganador Semi 2", winner: null }
+          ]
+        };
+      } else if (count === 16) {
+        torneoState.tree = {
+          quarters: [
+            { t1: "1° Grupo A", t2: "2° Grupo B", winner: null },
+            { t1: "1° Grupo C", t2: "2° Grupo D", winner: null },
+            { t1: "1° Grupo B", t2: "2° Grupo A", winner: null },
+            { t1: "1° Grupo D", t2: "2° Grupo C", winner: null }
+          ],
+          semi: [
+            { t1: "Ganador Cuartos 1", t2: "Ganador Cuartos 2", winner: null },
+            { t1: "Ganador Cuartos 3", t2: "Ganador Cuartos 4", winner: null }
+          ],
+          final: [
+            { t1: "Ganador Semi 1", t2: "Ganador Semi 2", winner: null }
+          ]
+        };
+      }
+    }
+
+    function setupDirectKnockoutMode(count, shuffled) {
+      torneoState.groups = [];
+      if (count === 4) {
+        torneoState.tree = {
+          semi: [
+            { t1: shuffled[0], t2: shuffled[1], winner: null },
+            { t1: shuffled[2], t2: shuffled[3], winner: null }
+          ],
+          final: [
+            { t1: "???", t2: "???", winner: null }
+          ]
+        };
+      } else if (count === 8) {
+        torneoState.tree = {
+          quarters: [
+            { t1: shuffled[0], t2: shuffled[1], winner: null },
+            { t1: shuffled[2], t2: shuffled[3], winner: null },
+            { t1: shuffled[4], t2: shuffled[5], winner: null },
+            { t1: shuffled[6], t2: shuffled[7], winner: null }
+          ],
+          semi: [
+            { t1: "???", t2: "???", winner: null },
+            { t1: "???", t2: "???", winner: null }
+          ],
+          final: [
+            { t1: "???", t2: "???", winner: null }
+          ]
+        };
+      } else if (count === 16) {
+        let r16 = [];
+        for(let i=0; i<8; i++) {
+          r16.push({ t1: shuffled[i*2], t2: shuffled[i*2+1], winner: null });
+        }
+        torneoState.tree = {
+          r16: r16,
+          quarters: Array(4).fill(null).map(() => ({ t1: "???", t2: "???", winner: null })),
+          semi: Array(2).fill(null).map(() => ({ t1: "???", t2: "???", winner: null })),
+          final: [{ t1: "???", t2: "???", winner: null }]
+        };
+      }
+    }
+
+    function updateMatchScore(gIndex, mIndex, s1, s2) {
+      const group = torneoState.groups[gIndex];
+      const match = group.matches[mIndex];
+      match.s1 = s1 !== '' ? parseInt(s1) : '';
+      match.s2 = s2 !== '' ? parseInt(s2) : '';
+
+      group.teams.forEach(t => { t.pts = 0; t.gf = 0; t.gc = 0; t.dg = 0; });
+
+      group.matches.forEach(m => {
+        if (m.s1 !== '' && m.s2 !== '' && !isNaN(m.s1) && !isNaN(m.s2)) {
+          const t1 = group.teams.find(t => t.name === m.t1);
+          const t2 = group.teams.find(t => t.name === m.t2);
+
+          t1.gf += m.s1; t1.gc += m.s2;
+          t2.gf += m.s2; t2.gc += m.s1;
+
+          if (m.s1 > m.s2) t1.pts += 3;
+          else if (m.s2 > m.s1) t2.pts += 3;
+          else { t1.pts += 1; t2.pts += 1; }
+        }
+      });
+
+      group.teams.forEach(t => { t.dg = t.gf - t.gc; });
+      group.teams.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+
+      if (torneoState.type === 'groups') updateGroupKnockoutTeams();
+      renderTorneoBoard();
+    }
+
+    function updateGroupKnockoutTeams() {
+      if (torneoState.playersCount === 8) {
+        const gA = torneoState.groups[0].teams;
+        const gB = torneoState.groups[1].teams;
+        torneoState.tree.semi[0].t1 = gA[0].name;
+        torneoState.tree.semi[0].t2 = gB[1].name;
+        torneoState.tree.semi[1].t1 = gB[0].name;
+        torneoState.tree.semi[1].t2 = gA[1].name;
+      } else if (torneoState.playersCount === 16) {
+        const gA = torneoState.groups[0].teams;
+        const gB = torneoState.groups[1].teams;
+        const gC = torneoState.groups[2].teams;
+        const gD = torneoState.groups[3].teams;
+        torneoState.tree.quarters[0].t1 = gA[0].name;
+        torneoState.tree.quarters[0].t2 = gB[1].name;
+        torneoState.tree.quarters[1].t1 = gC[0].name;
+        torneoState.tree.quarters[1].t2 = gD[1].name;
+        torneoState.tree.quarters[2].t1 = gB[0].name;
+        torneoState.tree.quarters[2].t2 = gA[1].name;
+        torneoState.tree.quarters[3].t1 = gD[0].name;
+        torneoState.tree.quarters[3].t2 = gC[1].name;
+      }
+    }
+
+    function selectTreeWinner(stage, matchIdx, winnerTeam) {
+      if (!winnerTeam || winnerTeam === '???') return;
+      const stagesOrder = ['r16', 'quarters', 'semi', 'final'];
+      const currentStageIdx = stagesOrder.indexOf(stage);
+
+      torneoState.tree[stage][matchIdx].winner = winnerTeam;
+
+      if (currentStageIdx < stagesOrder.length - 1) {
+        const nextStage = stagesOrder[currentStageIdx + 1];
+        if (torneoState.tree[nextStage]) {
+          const nextMatchIdx = Math.floor(matchIdx / 2);
+          const isFirst = matchIdx % 2 === 0;
+          if (isFirst) torneoState.tree[nextStage][nextMatchIdx].t1 = winnerTeam;
+          else torneoState.tree[nextStage][nextMatchIdx].t2 = winnerTeam;
+        }
+      }
+      renderTorneoBoard();
+    }
+
+    function renderTorneoBoard() {
+      const container = document.getElementById('tournamentBoardContent');
+      let html = '';
+
+      if (torneoState.type === 'groups' && torneoState.groups.length > 0) {
+        html += `<h3 style="font-family:Orbitron; color:var(--neon-green); text-align:center;">FASE DE GRUPOS</h3>`;
+        torneoState.groups.forEach((g, gIdx) => {
+          html += `
+            <div class="group-card">
+              <div class="group-title">${g.name}</div>
+              <table class="group-table">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;">Equipo</th>
+                    <th>PTS</th>
+                    <th>GF</th>
+                    <th>GC</th>
+                    <th>DG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${g.teams.map((t, idx) => `
+                    <tr style="${idx < 2 ? 'color: var(--neon-green); font-weight: bold;' : ''}">
+                      <td style="text-align:left;">${idx + 1}.${t.name}</td>
+                      <td>${t.pts}</td>
+                      <td>${t.gf}</td>
+                      <td>${t.gc}</td>
+                      <td>${t.dg > 0 ? '+' + t.dg : t.dg}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+
+              <div style="margin-top: 15px;">
+                <div style="font-family:Orbitron; font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Partidos del Grupo</div>
+                ${g.matches.map((m, mIdx) => `
+                  <div class="match-row">
+                    <div class="match-team" style="text-align:right;">${m.t1}</div>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                      <input type="number" class="match-score-input" value="${m.s1}" onchange="updateMatchScore(${gIdx}, ${mIdx}, this.value, ${m.s2 !== '' ? m.s2 : "''"})">
+                      <span>-</span>
+                      <input type="number" class="match-score-input" value="${m.s2}" onchange="updateMatchScore(${gIdx}, ${mIdx},${m.s1 !== '' ? m.s1 : "''"}, this.value)">
+                    </div>
+                    <div class="match-team" style="text-align:left;">${m.t2}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      html += `<h3 style="font-family:Orbitron; color:var(--neon-green); text-align:center; margin-top:15px;">FASE ELIMINATORIA</h3>`;
+      html += `<div class="tree-container">`;
+
+      const stageNames = { r16: 'Octavos', quarters: 'Cuartos', semi: 'Semifinal', final: 'Final' };
+      Object.keys(torneoState.tree).forEach(stage => {
+        html += `<div class="tree-round"><div class="tree-round-title">${stageNames[stage]}</div>`;
+        torneoState.tree[stage].forEach((m, idx) => {
+          html += `
+            <div class="tree-match">
+              <div class="tree-team ${m.winner === m.t1 && m.t1 !== '???' ? 'winner' : ''} ${m.t1 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('${stage}', ${idx}, '${m.t1}')">
+                <span>${m.t1}</span>
+                ${m.winner === m.t1 && m.t1 !== '???' ? '✓' : ''}
+              </div>
+              <div class="tree-team ${m.winner === m.t2 && m.t2 !== '???' ? 'winner' : ''} ${m.t2 === '???' ? 'empty' : ''}" onclick="selectTreeWinner('${stage}', ${idx}, '${m.t2}')">
+                <span>${m.t2}</span>
+                ${m.winner === m.t2 && m.t2 !== '???' ? '✓' : ''}
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function resetTorneo() {
+      document.getElementById('torneoBoard').style.display = 'none';
+      document.getElementById('torneoStep1').style.display = 'flex';
+    }
+
+    // MODO GASTOS LOGIC
+    let gastosState = {
+      players: [],
+      expenses: []
+    };
+
+    function goToGastosStep2() {
+      const count = parseInt(document.getElementById('gastosPlayerCount').value);
+      const container = document.getElementById('gastosPlayersInputs');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= count; i++) {
+        const group = document.createElement('div');
+        group.className = 'setup-group';
+        group.innerHTML = `
+          <label style="font-size:0.75rem; color: var(--neon-orange);">Persona ${i}</label>
+          <input type="text" id="gastosPlayerInput_${i}" placeholder="Nombre persona ${i}" value="Persona ${i}">
+        `;
+        container.appendChild(group);
+      }
+
+      document.getElementById('gastosStep1').style.display = 'none';
+      document.getElementById('gastosStep2').style.display = 'flex';
+    }
+
+    function startGastosManager() {
+      const count = parseInt(document.getElementById('gastosPlayerCount').value);
+      gastosState.players = [];
+
+      for(let i = 1; i <= count; i++) {
+        const inputName = document.getElementById(`gastosPlayerInput_${i}`).value.trim();
+        gastosState.players.push(inputName !== '' ? inputName : `Persona ${i}`);
+      }
+
+      gastosState.expenses = [];
+      renderPayersCheckboxes();
+
+      document.getElementById('gastosStep2').style.display = 'none';
+      document.getElementById('gastosBoard').style.display = 'flex';
+    }
+
+    function renderPayersCheckboxes() {
+      const container = document.getElementById('payersCheckboxes');
+      container.innerHTML = '';
+
+      gastosState.players.forEach((p, idx) => {
+        const item = document.createElement('label');
+        item.className = 'checkbox-item';
+        item.innerHTML = `
+          <input type="checkbox" id="payerCb_${idx}" value="${p}">
+          <span>${p}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function addExpense() {
+      const desc = document.getElementById('expenseDescInput').value.trim();
+      const amount = parseFloat(document.getElementById('expenseAmountInput').value);
+
+      let selectedPayers = [];
+      gastosState.players.forEach((p, idx) => {
+        const cb = document.getElementById(`payerCb_${idx}`);
+        if(cb && cb.checked) selectedPayers.push(p);
+      });
+
+      if(!desc || isNaN(amount) || amount <= 0 || selectedPayers.length === 0) {
+        alert("Completá la descripción, un monto válido mayor a 0 y seleccioná al menos una persona que haya pagado.");
+        return;
+      }
+
+      gastosState.expenses.push({
+        desc,
+        amount,
+        payers: selectedPayers
+      });
+
+      document.getElementById('expenseDescInput').value = '';
+      document.getElementById('expenseAmountInput').value = '';
+      gastosState.players.forEach((p, idx) => {
+        const cb = document.getElementById(`payerCb_${idx}`);
+        if(cb) cb.checked = false;
+      });
+
+      renderExpensesList();
+    }
+
+    function renderExpensesList() {
+      const container = document.getElementById('expenseListContainer');
+      const totalElem = document.getElementById('totalJuntadaAmount');
+
+      if(gastosState.expenses.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">No hay gastos ingresados aún.</div>`;
+        totalElem.innerText = '$0';
+        return;
+      }
+
+      let total = 0;
+      container.innerHTML = '';
+
+      gastosState.expenses.forEach((e, idx) => {
+        total += e.amount;
+        const card = document.createElement('div');
+        card.className = 'expense-card';
+        card.innerHTML = `
+          <div class="expense-info">
+            <span class="expense-desc">${e.desc}</span>
+            <span class="expense-payers">Pagado por: ${e.payers.join(', ')}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="expense-amount">$${formatMoney(e.amount)}</span>
+            <button style="background:transparent; border:none; color:var(--neon-pink); cursor:pointer; font-weight:bold;" onclick="removeExpense(${idx})">✕</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      totalElem.innerText = `$${formatMoney(total)}`;
+    }
+
+    function removeExpense(index) {
+      gastosState.expenses.splice(index, 1);
+      renderExpensesList();
+    }
+
+    function calculateBalances() {
+      if(gastosState.expenses.length === 0) {
+        alert("Ingresá al menos un gasto para realizar el cálculo.");
+        return;
+      }
+
+      const totalSpent = gastosState.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+      const perPersonShare = totalSpent / gastosState.players.length;
+
+      let balances = {};
+      gastosState.players.forEach(p => balances[p] = 0);
+
+      gastosState.expenses.forEach(e => {
+        const amountPerPayer = e.amount / e.payers.length;
+        e.payers.forEach(p => {
+          balances[p] += amountPerPayer;
+        });
+      });
+
+      let netBalances = {};
+      gastosState.players.forEach(p => {
+        netBalances[p] = balances[p] - perPersonShare;
+      });
+
+      let debtors = [];
+      let creditors = [];
+
+      for(let p in netBalances) {
+        if(netBalances[p] < -0.01) {
+          debtors.push({ name: p, amount: Math.abs(netBalances[p]) });
+        } else if(netBalances[p] > 0.01) {
+          creditors.push({ name: p, amount: netBalances[p] });
+        }
+      }
+
+      let transfers = [];
+
+      let dIdx = 0;
+      let cIdx = 0;
+
+      while(dIdx < debtors.length && cIdx < creditors.length) {
+        let debtor = debtors[dIdx];
+        let creditor = creditors[cIdx];
+
+        let transferAmount = Math.min(debtor.amount, creditor.amount);
+
+        transfers.push({
+          from: debtor.name,
+          to: creditor.name,
+          amount: transferAmount
+        });
+
+        debtor.amount -= transferAmount;
+        creditor.amount -= transferAmount;
+
+        if(debtor.amount < 0.01) dIdx++;
+        if(creditor.amount < 0.01) cIdx++;
+      }
+
+      const transfersContainer = document.getElementById('transfersContainer');
+      transfersContainer.innerHTML = '';
+
+      if(transfers.length === 0) {
+        transfersContainer.innerHTML = `<div style="text-align:center; color:#fff; font-size:0.9rem;">¡Todos están a mano! Nadie debe nada.</div>`;
+      } else {
+        transfers.forEach(t => {
+          const card = document.createElement('div');
+          card.className = 'transfer-card';
+          card.innerHTML = `
+            <span style="font-weight:700; color:#fff;">${t.from}</span>
+            <span class="transfer-arrow">debe pasar $${formatMoney(t.amount)} a ➔</span>
+            <span style="font-weight:700; color:var(--neon-green);">${t.to}</span>
+          `;
+          transfersContainer.appendChild(card);
+        });
+      }
+
+      document.getElementById('gastosResultsPanel').style.display = 'flex';
+      document.getElementById('gastosResultsPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetGastosGame() {
+      document.getElementById('gastosResultsPanel').style.display = 'none';
+      document.getElementById('gastosBoard').style.display = 'none';
+      document.getElementById('gastosStep2').style.display = 'none';
+      document.getElementById('gastosStep1').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
